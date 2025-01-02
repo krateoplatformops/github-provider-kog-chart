@@ -1,0 +1,9 @@
+# filepath: my-helm-chart/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-repo
+data:
+  repo.yaml: |
+{{ tpl (.Files.Get "assets/repo.yaml") . | indent 4 }}
+  

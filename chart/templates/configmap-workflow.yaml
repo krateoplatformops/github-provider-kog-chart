@@ -1,0 +1,9 @@
+# filepath: my-helm-chart/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-workflow
+data:
+  workflow.yaml: |
+{{ tpl (.Files.Get "assets/workflow.yaml") . | indent 4 }}
+  

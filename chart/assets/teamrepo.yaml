@@ -1,0 +1,948 @@
+---
+openapi: 3.0.3
+info:
+  version: 1.1.4
+  title: GitHub v3 REST API
+  description: GitHub's v3 REST API.
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://docs.github.com/articles/github-terms-of-service
+  contact:
+    name: Support
+    url: https://support.github.com/contact?tags=dotcom-rest-api
+  x-github-plan: api.github.com
+servers:
+- url: https://api.github.com
+externalDocs:
+  description: GitHub v3 REST API
+  url: https://docs.github.com/rest/
+paths:
+  /teamrepository/orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}:
+    get:
+      servers:
+      - url: {{ include "webServiceUrl" . }}
+      summary: Get the permission of a team in a repository
+      description: Get the permission of a team in a repository
+      operationId: get-team-repo-permission
+      parameters:
+        - name: org
+          in: path
+          description: Organization of the repository
+          required: true
+          schema:
+            type: string
+        - name: team_slug
+          in: path
+          description: Slug of the team
+          required: true
+          schema:
+            type: string
+        - name: owner
+          in: path
+          description: Owner of the repository
+          required: true
+          schema:
+            type: string
+        - name: repo
+          in: path
+          description: Name of the repository
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  "/orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}":
+    get:
+      summary: Check team permissions for a repository
+      description: |-
+        Checks whether a team has `admin`, `push`, `maintain`, `triage`, or `pull` permission for a repository. Repositories inherited through a parent team will also be checked.
+
+        You can also get information about the specified repository, including what permissions the team grants on it, by passing the following custom [media type](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types/) via the `application/vnd.github.v3.repository+json` accept header.
+
+        If a team doesn't have permission for the repository, you will receive a `404 Not Found` response status.
+
+        If the repository is private, you must have at least `read` permission for that repository, and your token must have the `repo` or `admin:org` scope. Otherwise, you will receive a `404 Not Found` response status.
+
+        > [!NOTE]
+        > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
+      tags:
+      - teams
+      operationId: teams/check-permissions-for-repo-in-org
+      externalDocs:
+        description: API method documentation
+        url: https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository
+      parameters:
+      - "$ref": "#/components/parameters/org"
+      - "$ref": "#/components/parameters/team-slug"
+      - "$ref": "#/components/parameters/owner"
+      - "$ref": "#/components/parameters/repo"
+      responses:
+        '200':
+          description: Alternative response with repository permissions
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/team-repository"
+        '204':
+          description: Response if team has permission for the repository. This is
+            the response when the repository media type hasn't been provded in the
+            Accept header.
+        '404':
+          description: Not Found if team does not have permission for the repository
+      x-github:
+        githubCloudOnly: false
+        enabledForGitHubApps: true
+        category: teams
+        subcategory: teams
+    put:
+      summary: Add or update team repository permissions
+      description: |-
+        To add a repository to a team or update the team's permission on a repository, the authenticated user must have admin access to the repository, and must be able to see the team. The repository must be owned by the organization, or a direct fork of a repository owned by the organization. You will get a `422 Unprocessable Entity` status if you attempt to add a repository to a team that is not owned by the organization. Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
+
+        > [!NOTE]
+        > You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
+
+        For more information about the permission levels, see "[Repository permission levels for an organization](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
+      tags:
+      - teams
+      operationId: teams/add-or-update-repo-permissions-in-org
+      externalDocs:
+        description: API method documentation
+        url: https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions
+      parameters:
+      - "$ref": "#/components/parameters/org"
+      - "$ref": "#/components/parameters/team-slug"
+      - "$ref": "#/components/parameters/owner"
+      - "$ref": "#/components/parameters/repo"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permission:
+                  type: string
+                  description: 'The permission to grant the team on this repository.
+                    We accept the following permissions to be set: `pull`, `triage`,
+                    `push`, `maintain`, `admin` and you can also specify a custom
+                    repository role name, if the owning organization has defined any.
+                    If no permission is specified, the team''s `permission` attribute
+                    will be used to determine what permission to grant the team on
+                    this repository.'
+            examples:
+              default:
+                summary: Adding a team to an organization repository with the write
+                  role
+                value:
+                  permission: push
+      responses:
+        '204':
+          description: Response
+      x-github:
+        githubCloudOnly: false
+        enabledForGitHubApps: true
+        category: teams
+        subcategory: teams
+    delete:
+      summary: Remove a repository from a team
+      description: |-
+        If the authenticated user is an organization owner or a team maintainer, they can remove any repositories from the team. To remove a repository from a team as an organization member, the authenticated user must have admin access to the repository and must be able to see the team. This does not delete the repository, it just removes it from the team.
+
+        > [!NOTE]
+        > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
+      tags:
+      - teams
+      operationId: teams/remove-repo-in-org
+      externalDocs:
+        description: API method documentation
+        url: https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team
+      parameters:
+      - "$ref": "#/components/parameters/org"
+      - "$ref": "#/components/parameters/team-slug"
+      - "$ref": "#/components/parameters/owner"
+      - "$ref": "#/components/parameters/repo"
+      responses:
+        '204':
+          description: Response
+      x-github:
+        githubCloudOnly: false
+        enabledForGitHubApps: true
+        category: teams
+        subcategory: teams
+  "/orgs/{org}/teams/{team_slug}/teams":
+    get:
+      summary: List child teams
+      description: |-
+        Lists the child teams of the team specified by `{team_slug}`.
+
+        > [!NOTE]
+        > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/teams`.
+      tags:
+      - teams
+      operationId: teams/list-child-in-org
+      externalDocs:
+        description: API method documentation
+        url: https://docs.github.com/rest/teams/teams#list-child-teams
+      parameters:
+      - "$ref": "#/components/parameters/org"
+      - "$ref": "#/components/parameters/team-slug"
+      - "$ref": "#/components/parameters/per-page"
+      - "$ref": "#/components/parameters/page"
+      responses:
+        '200':
+          description: if child teams exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/team"
+          headers:
+            Link:
+              "$ref": "#/components/headers/link"
+      x-github:
+        githubCloudOnly: false
+        enabledForGitHubApps: true
+        category: teams
+        subcategory: teams
+components:
+  securitySchemes:
+    accessToken:
+      type: http
+      scheme: bearer
+  headers:
+    link:
+      example: <https://api.github.com/resource?page=2>; rel="next", <https://api.github.com/resource?page=5>;
+        rel="last"
+      schema:
+        type: string
+  schemas:
+    team:
+        title: Team
+        description: Groups of organization members that gives permissions on specified
+          repositories.
+        type: object
+        properties:
+          id:
+            type: integer
+          node_id:
+            type: string
+          name:
+            type: string
+          slug:
+            type: string
+          description:
+            type: string
+            nullable: true
+          privacy:
+            type: string
+          notification_setting:
+            type: string
+          permission:
+            type: string
+          permissions:
+            type: object
+            properties:
+              pull:
+                type: boolean
+              triage:
+                type: boolean
+              push:
+                type: boolean
+              maintain:
+                type: boolean
+              admin:
+                type: boolean
+            required:
+            - pull
+            - triage
+            - push
+            - maintain
+            - admin
+          url:
+            type: string
+            format: uri
+          html_url:
+            type: string
+            format: uri
+            example: https://github.com/orgs/rails/teams/core
+          members_url:
+            type: string
+          repositories_url:
+            type: string
+            format: uri
+          parent:
+            "$ref": "#/components/schemas/nullable-team-simple"
+        required:
+        - id
+        - node_id
+        - url
+        - members_url
+        - name
+        - description
+        - permission
+        - html_url
+        - repositories_url
+        - slug
+        - parent
+    nullable-team-simple:
+      title: Team Simple
+      description: Groups of organization members that gives permissions on specified
+        repositories.
+      type: object
+      properties:
+        id:
+          description: Unique identifier of the team
+          type: integer
+          example: 1
+        node_id:
+          type: string
+          example: MDQ6VGVhbTE=
+        url:
+          description: URL for the team
+          type: string
+          format: uri
+          example: https://api.github.com/organizations/1/team/1
+        members_url:
+          type: string
+          example: https://api.github.com/organizations/1/team/1/members{/member}
+        name:
+          description: Name of the team
+          type: string
+          example: Justice League
+        description:
+          description: Description of the team
+          type: string
+          nullable: true
+          example: A great team.
+        permission:
+          description: Permission that the team will have for its repositories
+          type: string
+          example: admin
+        privacy:
+          description: The level of privacy this team should have
+          type: string
+          example: closed
+        notification_setting:
+          description: The notification setting the team has set
+          type: string
+          example: notifications_enabled
+        html_url:
+          type: string
+          format: uri
+          example: https://github.com/orgs/rails/teams/core
+        repositories_url:
+          type: string
+          format: uri
+          example: https://api.github.com/organizations/1/team/1/repos
+        slug:
+          type: string
+          example: justice-league
+        ldap_dn:
+          description: Distinguished Name (DN) that team maps to within LDAP environment
+          example: uid=example,ou=users,dc=github,dc=com
+          type: string
+      required:
+      - id
+      - node_id
+      - url
+      - members_url
+      - name
+      - description
+      - permission
+      - html_url
+      - repositories_url
+      - slug
+      nullable: true
+    team-repository:
+      title: Team Repository
+      description: A team's access to a repository.
+      type: object
+      properties:
+        id:
+          description: Unique identifier of the repository
+          example: 42
+          type: integer
+        node_id:
+          type: string
+          example: MDEwOlJlcG9zaXRvcnkxMjk2MjY5
+        name:
+          description: The name of the repository.
+          type: string
+          example: Team Environment
+        full_name:
+          type: string
+          example: octocat/Hello-World
+        license:
+          "$ref": "#/components/schemas/nullable-license-simple"
+        forks:
+          type: integer
+        permissions:
+          type: object
+          properties:
+            admin:
+              type: boolean
+            pull:
+              type: boolean
+            triage:
+              type: boolean
+            push:
+              type: boolean
+            maintain:
+              type: boolean
+          required:
+          - admin
+          - pull
+          - push
+        role_name:
+          type: string
+          example: admin
+        owner:
+          "$ref": "#/components/schemas/nullable-simple-user"
+        private:
+          description: Whether the repository is private or public.
+          default: false
+          type: boolean
+        html_url:
+          type: string
+          format: uri
+          example: https://github.com/octocat/Hello-World
+        description:
+          type: string
+          example: This your first repo!
+          nullable: true
+        fork:
+          type: boolean
+        url:
+          type: string
+          format: uri
+          example: https://api.github.com/repos/octocat/Hello-World
+        archive_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/{archive_format}{/ref}
+        assignees_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/assignees{/user}
+        blobs_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/git/blobs{/sha}
+        branches_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/branches{/branch}
+        collaborators_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/collaborators{/collaborator}
+        comments_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/comments{/number}
+        commits_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/commits{/sha}
+        compare_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/compare/{base}...{head}
+        contents_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/contents/{+path}
+        contributors_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/contributors
+        deployments_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/deployments
+        downloads_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/downloads
+        events_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/events
+        forks_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/forks
+        git_commits_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/git/commits{/sha}
+        git_refs_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/git/refs{/sha}
+        git_tags_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/git/tags{/sha}
+        git_url:
+          type: string
+          example: git:github.com/octocat/Hello-World.git
+        issue_comment_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/issues/comments{/number}
+        issue_events_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/issues/events{/number}
+        issues_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/issues{/number}
+        keys_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/keys{/key_id}
+        labels_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/labels{/name}
+        languages_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/languages
+        merges_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/merges
+        milestones_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/milestones{/number}
+        notifications_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/notifications{?since,all,participating}
+        pulls_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/pulls{/number}
+        releases_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/releases{/id}
+        ssh_url:
+          type: string
+          example: git@github.com:octocat/Hello-World.git
+        stargazers_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/stargazers
+        statuses_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/statuses/{sha}
+        subscribers_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/subscribers
+        subscription_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/subscription
+        tags_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/tags
+        teams_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/teams
+        trees_url:
+          type: string
+          example: http://api.github.com/repos/octocat/Hello-World/git/trees{/sha}
+        clone_url:
+          type: string
+          example: https://github.com/octocat/Hello-World.git
+        mirror_url:
+          type: string
+          format: uri
+          example: git:git.example.com/octocat/Hello-World
+          nullable: true
+        hooks_url:
+          type: string
+          format: uri
+          example: http://api.github.com/repos/octocat/Hello-World/hooks
+        svn_url:
+          type: string
+          format: uri
+          example: https://svn.github.com/octocat/Hello-World
+        homepage:
+          type: string
+          format: uri
+          example: https://github.com
+          nullable: true
+        language:
+          type: string
+          nullable: true
+        forks_count:
+          type: integer
+          example: 9
+        stargazers_count:
+          type: integer
+          example: 80
+        watchers_count:
+          type: integer
+          example: 80
+        size:
+          type: integer
+          example: 108
+        default_branch:
+          description: The default branch of the repository.
+          type: string
+          example: master
+        open_issues_count:
+          type: integer
+          example: 0
+        is_template:
+          description: Whether this repository acts as a template that can be used
+            to generate new repositories.
+          default: false
+          type: boolean
+          example: true
+        topics:
+          type: array
+          items:
+            type: string
+        has_issues:
+          description: Whether issues are enabled.
+          default: true
+          type: boolean
+          example: true
+        has_projects:
+          description: Whether projects are enabled.
+          default: true
+          type: boolean
+          example: true
+        has_wiki:
+          description: Whether the wiki is enabled.
+          default: true
+          type: boolean
+          example: true
+        has_pages:
+          type: boolean
+        has_downloads:
+          description: Whether downloads are enabled.
+          default: true
+          type: boolean
+          example: true
+        archived:
+          description: Whether the repository is archived.
+          default: false
+          type: boolean
+        disabled:
+          type: boolean
+          description: Returns whether or not this repository disabled.
+        visibility:
+          description: 'The repository visibility: public, private, or internal.'
+          default: public
+          type: string
+        pushed_at:
+          type: string
+          format: date-time
+          example: '2011-01-26T19:06:43Z'
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          example: '2011-01-26T19:01:12Z'
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          example: '2011-01-26T19:14:43Z'
+          nullable: true
+        allow_rebase_merge:
+          description: Whether to allow rebase merges for pull requests.
+          default: true
+          type: boolean
+          example: true
+        temp_clone_token:
+          type: string
+        allow_squash_merge:
+          description: Whether to allow squash merges for pull requests.
+          default: true
+          type: boolean
+          example: true
+        allow_auto_merge:
+          description: Whether to allow Auto-merge to be used on pull requests.
+          default: false
+          type: boolean
+          example: false
+        delete_branch_on_merge:
+          description: Whether to delete head branches when pull requests are merged
+          default: false
+          type: boolean
+          example: false
+        allow_merge_commit:
+          description: Whether to allow merge commits for pull requests.
+          default: true
+          type: boolean
+          example: true
+        allow_forking:
+          description: Whether to allow forking this repo
+          default: false
+          type: boolean
+          example: false
+        web_commit_signoff_required:
+          description: Whether to require contributors to sign off on web-based commits
+          default: false
+          type: boolean
+          example: false
+        subscribers_count:
+          type: integer
+        network_count:
+          type: integer
+        open_issues:
+          type: integer
+        watchers:
+          type: integer
+        master_branch:
+          type: string
+      required:
+      - archive_url
+      - assignees_url
+      - blobs_url
+      - branches_url
+      - collaborators_url
+      - comments_url
+      - commits_url
+      - compare_url
+      - contents_url
+      - contributors_url
+      - deployments_url
+      - description
+      - downloads_url
+      - events_url
+      - fork
+      - forks_url
+      - full_name
+      - git_commits_url
+      - git_refs_url
+      - git_tags_url
+      - hooks_url
+      - html_url
+      - id
+      - node_id
+      - issue_comment_url
+      - issue_events_url
+      - issues_url
+      - keys_url
+      - labels_url
+      - languages_url
+      - merges_url
+      - milestones_url
+      - name
+      - notifications_url
+      - owner
+      - private
+      - pulls_url
+      - releases_url
+      - stargazers_url
+      - statuses_url
+      - subscribers_url
+      - subscription_url
+      - tags_url
+      - teams_url
+      - trees_url
+      - url
+      - clone_url
+      - default_branch
+      - forks
+      - forks_count
+      - git_url
+      - has_downloads
+      - has_issues
+      - has_projects
+      - has_wiki
+      - has_pages
+      - homepage
+      - language
+      - archived
+      - disabled
+      - mirror_url
+      - open_issues
+      - open_issues_count
+      - license
+      - pushed_at
+      - size
+      - ssh_url
+      - stargazers_count
+      - svn_url
+      - watchers
+      - watchers_count
+      - created_at
+      - updated_at
+    nullable-license-simple:
+      title: License Simple
+      description: License Simple
+      type: object
+      properties:
+        key:
+          type: string
+          example: mit
+        name:
+          type: string
+          example: MIT License
+        url:
+          type: string
+          nullable: true
+          format: uri
+          example: https://api.github.com/licenses/mit
+        spdx_id:
+          type: string
+          nullable: true
+          example: MIT
+        node_id:
+          type: string
+          example: MDc6TGljZW5zZW1pdA==
+        html_url:
+          type: string
+          format: uri
+      required:
+      - key
+      - name
+      - url
+      - spdx_id
+      - node_id
+      nullable: true
+    nullable-simple-user:
+      title: Simple User
+      description: A GitHub user.
+      type: object
+      properties:
+        name:
+          nullable: true
+          type: string
+        email:
+          nullable: true
+          type: string
+        login:
+          type: string
+          example: octocat
+        id:
+          type: integer
+          format: int64
+          example: 1
+        node_id:
+          type: string
+          example: MDQ6VXNlcjE=
+        avatar_url:
+          type: string
+          format: uri
+          example: https://github.com/images/error/octocat_happy.gif
+        gravatar_id:
+          type: string
+          example: 41d064eb2195891e12d0413f63227ea7
+          nullable: true
+        url:
+          type: string
+          format: uri
+          example: https://api.github.com/users/octocat
+        html_url:
+          type: string
+          format: uri
+          example: https://github.com/octocat
+        followers_url:
+          type: string
+          format: uri
+          example: https://api.github.com/users/octocat/followers
+        following_url:
+          type: string
+          example: https://api.github.com/users/octocat/following{/other_user}
+        gists_url:
+          type: string
+          example: https://api.github.com/users/octocat/gists{/gist_id}
+        starred_url:
+          type: string
+          example: https://api.github.com/users/octocat/starred{/owner}{/repo}
+        subscriptions_url:
+          type: string
+          format: uri
+          example: https://api.github.com/users/octocat/subscriptions
+        organizations_url:
+          type: string
+          format: uri
+          example: https://api.github.com/users/octocat/orgs
+        repos_url:
+          type: string
+          format: uri
+          example: https://api.github.com/users/octocat/repos
+        events_url:
+          type: string
+          example: https://api.github.com/users/octocat/events{/privacy}
+        received_events_url:
+          type: string
+          format: uri
+          example: https://api.github.com/users/octocat/received_events
+        type:
+          type: string
+          example: User
+        site_admin:
+          type: boolean
+        starred_at:
+          type: string
+          example: '"2020-07-09T00:17:55Z"'
+      required:
+      - avatar_url
+      - events_url
+      - followers_url
+      - following_url
+      - gists_url
+      - gravatar_id
+      - html_url
+      - id
+      - node_id
+      - login
+      - organizations_url
+      - received_events_url
+      - repos_url
+      - site_admin
+      - starred_url
+      - subscriptions_url
+      - type
+      - url
+      nullable: true
+  parameters:
+    org:
+      name: org
+      description: The organization name. The name is not case sensitive.
+      in: path
+      required: true
+      schema:
+        type: string
+    team-slug:
+      name: team_slug
+      description: The slug of the team name.
+      in: path
+      required: true
+      schema:
+        type: string
+    per-page:
+      name: per_page
+      description: The number of results per page (max 100). For more information,
+        see "[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api)."
+      in: query
+      schema:
+        type: integer
+        default: 30
+    page:
+      name: page
+      description: The page number of the results to fetch. For more information,
+        see "[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api)."
+      in: query
+      schema:
+        type: integer
+        default: 1
+    owner:
+      name: owner
+      description: The account owner of the repository. The name is not case sensitive.
+      in: path
+      required: true
+      schema:
+        type: string
+    repo:
+      name: repo
+      description: The name of the repository without the `.git` extension. The name
+        is not case sensitive.
+      in: path
+      required: true
+      schema:
+        type: string

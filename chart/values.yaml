@@ -1,0 +1,6 @@
+webservice:
+  service:
+    port: 8081
+  image:
+    tag: 0.0.1
+

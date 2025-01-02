@@ -1,0 +1,23 @@
+kind: RestDefinition
+apiVersion: swaggergen.krateo.io/v1alpha1
+metadata:
+  name: {{ .Release.Name }}-repo
+spec:
+  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-repo/repo.yaml
+  resourceGroup: github.krateo.io
+  resource: 
+    kind: Repo
+    identifiers:
+      - id 
+      - name
+      - html_url
+    verbsDescription:
+    - action: create
+      method: POST
+      path: /orgs/{org}/repos
+    - action: delete
+      method: DELETE
+      path: /repos/{org}/{name}
+    - action: get
+      method: GET
+      path: /repos/{org}/{name}

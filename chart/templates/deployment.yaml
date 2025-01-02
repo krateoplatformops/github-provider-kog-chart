@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-plugin-krateo
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-plugin-krateo
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-plugin-krateo
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-plugin-krateo
+          image: ghcr.io/krateoplatformops/github-rest-dynamic-controller-plugin:{{ .Values.webservice.image.tag }}
+          ports:
+            - containerPort: 8081
