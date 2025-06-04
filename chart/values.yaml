@@ -10,10 +10,12 @@ webservice:
 
 restdefinitions:
   collaborator:
-    enabled: false
+    enabled: true
   repo:
-    enabled: false
+    enabled: true
   teamrepo:
-    enabled: false
+    enabled: true
   workflow:
+    enabled: true
+  runnergroup:
     enabled: true

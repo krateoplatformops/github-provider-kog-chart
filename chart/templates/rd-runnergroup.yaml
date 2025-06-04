@@ -1,0 +1,30 @@
+{{- if .Values.restdefinitions.runnergroup.enabled }}
+kind: RestDefinition
+apiVersion: swaggergen.krateo.io/v1alpha1
+metadata:
+  name: {{ .Release.Name }}-runnergroup
+spec:
+  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-runnergroup/runnergroup.yaml
+  resourceGroup: github.krateo.io
+  resource:
+    kind: RunnerGroup
+    identifiers:
+      - org
+      - id
+    verbsDescription:
+    #- action: findby
+    #  method: GET
+    #  path: /orgs/{org}/actions/runner-groups
+    - action: get
+      method: GET
+      path: /orgs/{org}/actions/runner-groups/{id}
+    - action: update
+      method: PATCH
+      path: /orgs/{org}/actions/runner-groups/{id}
+    - action: create
+      method: POST
+      path: /orgs/{org}/actions/runner-groups
+    - action: delete
+      method: DELETE
+      path: /orgs/{org}/actions/runner-groups/{id}
+{{ end }}

@@ -1,4 +1,3 @@
-# filepath: my-helm-chart/templates/configmap.yaml
 {{- if .Values.restdefinitions.repo.enabled }}
 apiVersion: v1
 kind: ConfigMap

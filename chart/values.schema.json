@@ -43,6 +43,22 @@
           "title": "repo",
           "type": "object"
         },
+        "runnergroup": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "runnergroup",
+          "type": "object"
+        },
         "teamrepo": {
           "additionalProperties": false,
           "properties": {
@@ -80,7 +96,8 @@
         "collaborator",
         "repo",
         "teamrepo",
-        "workflow"
+        "workflow",
+        "runnergroup"
       ],
       "title": "restdefinitions",
       "type": "object"

@@ -1,5 +1,5 @@
-kind: BearerAuth
 apiVersion: github.krateo.io/v1alpha1
+kind: BearerAuth
 metadata:
   name: bearer-gh-ref
   namespace: ghp

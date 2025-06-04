@@ -1,13 +1,12 @@
 apiVersion: github.krateo.io/v1alpha1
-Kind: Repo
+kind: RunnerGroup
 metadata:
-  name: test-repo1
+  name: runner-test
   namespace: ghp
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
   authenticationRefs:
     bearerAuthRef: bearer-gh-ref
-  org: leovice-org
-  name: test-repo1
-  description: A short description of the repository set by Krateo, updated v2
+  name: runner-test-by-krateo
+  org: krateoplatformops-test
