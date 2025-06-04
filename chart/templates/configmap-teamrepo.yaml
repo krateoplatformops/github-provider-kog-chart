@@ -1,4 +1,5 @@
 # filepath: my-helm-chart/templates/configmap.yaml
+{{- if .Values.restdefinitions.teamrepo.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,4 +7,5 @@ metadata:
 data:
   teamrepo.yaml: |
 {{ tpl (.Files.Get "assets/teamrepo.yaml") . | indent 4 }}
+{{ end }}
   

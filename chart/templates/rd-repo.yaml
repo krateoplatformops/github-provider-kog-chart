@@ -1,3 +1,4 @@
+{{- if .Values.restdefinitions.repo.enabled }}
 kind: RestDefinition
 apiVersion: swaggergen.krateo.io/v1alpha1
 metadata:
@@ -21,3 +22,7 @@ spec:
     - action: get
       method: GET
       path: /repos/{org}/{name}
+    - action: update
+      method: PATCH
+      path: /repos/{org}/{name}
+{{ end }}

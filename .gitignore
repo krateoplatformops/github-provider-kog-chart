@@ -54,3 +54,5 @@ cover.out
 /.vendor-new
 .tool-versions
 **/*.xpkg
+
+.DS_Store

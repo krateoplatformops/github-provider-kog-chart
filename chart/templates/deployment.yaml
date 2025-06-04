@@ -15,6 +15,22 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}-plugin-krateo
-          image: ghcr.io/krateoplatformops/github-rest-dynamic-controller-plugin:{{ .Values.webservice.image.tag }}
+          #image: ghcr.io/krateoplatformops/github-rest-dynamic-controller-plugin:{{ .Values.webservice.image.tag }}
+          image: {{ .Values.webservice.image.repository }}:{{ .Values.webservice.image.tag }}
+          imagePullPolicy: {{ .Values.webservice.image.imagePullPolicy }}
           ports:
-            - containerPort: 8081
+            - containerPort: {{ .Values.webservice.image.ports.containerPort }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+            periodSeconds: 5

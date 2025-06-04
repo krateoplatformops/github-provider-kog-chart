@@ -1,0 +1,13 @@
+kind: Repo
+apiVersion: github.krateo.io/v1alpha1
+metadata:
+  name: test-repo1
+  namespace: ghp
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  authenticationRefs:
+    bearerAuthRef: bearer-gh-ref
+  org: leovice-org
+  name: test-repo1
+  description: A short description of the repository set by Krateo, updated v2

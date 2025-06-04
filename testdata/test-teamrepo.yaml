@@ -1,0 +1,15 @@
+apiVersion: github.krateo.io/v1alpha1
+kind: TeamRepo
+metadata:
+  name: test-teamrepo
+  namespace: ghp
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  authenticationRefs:
+    bearerAuthRef: bearer-gh-ref
+  org: leovice-org
+  owner: leovice-org
+  team_slug: testteam
+  repo: teamrepo-tester
+  permission: pull

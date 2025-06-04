@@ -1,10 +1,11 @@
+{{- if .Values.restdefinitions.teamrepo.enabled }}
 kind: RestDefinition
 apiVersion: swaggergen.krateo.io/v1alpha1
 metadata:
   name: {{ .Release.Name }}-teamrepo
 spec:
   oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-teamrepo/teamrepo.yaml
-  resourceGroup: mlflow.krateo.io
+  resourceGroup: github.krateo.io
   resource: 
     kind: TeamRepo
     identifiers:
@@ -25,3 +26,4 @@ spec:
     - action: update
       method: PUT
       path: /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
+{{ end }}

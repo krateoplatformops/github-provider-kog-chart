@@ -1,6 +1,19 @@
 webservice:
   service:
-    port: 8081
+    port: 8080
   image:
-    tag: 0.0.1
+    repository: leovice/github-rest-dynamic-controller-plugin
+    tag: dev
+    imagePullPolicy: Always
+    ports:
+      containerPort: 8080
 
+restdefinitions:
+  collaborator:
+    enabled: false
+  repo:
+    enabled: false
+  teamrepo:
+    enabled: false
+  workflow:
+    enabled: true
