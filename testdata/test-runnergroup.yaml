@@ -8,5 +8,7 @@ metadata:
 spec:
   authenticationRefs:
     bearerAuthRef: bearer-gh-ref
-  name: runner-test-by-krateo
+  name: runner-test-by-krateo-updated-v5
   org: krateoplatformops-test
+  visibility: private
+  allows_public_repositories: false
