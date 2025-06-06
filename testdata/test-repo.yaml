@@ -10,6 +10,6 @@ spec:
     bearerAuthRef: bearer-gh-ref
   org: krateoplatformops-test
   name: test-repo1
-  description: A short description of the repository set by Krateo, updated v2
+  description: A short description of the repository set by Krateo
   visibility: public
   has_issues: true
