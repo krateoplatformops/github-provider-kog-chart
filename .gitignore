@@ -56,3 +56,6 @@ cover.out
 **/*.xpkg
 
 .DS_Store
+
+/dev_scripts
+/dev_scripts/**
