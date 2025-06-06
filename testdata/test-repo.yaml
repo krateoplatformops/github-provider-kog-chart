@@ -11,3 +11,5 @@ spec:
   org: krateoplatformops-test
   name: test-repo1
   description: A short description of the repository set by Krateo, updated v2
+  visibility: public
+  has_issues: true
