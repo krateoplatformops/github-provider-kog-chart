@@ -1,9 +1,8 @@
-name: release-pullrequest
+name: release-tag
 
 on:
-  pull_request:
-    branches:
-      - main
+  push:
+    tags: ["[0-9]+.[0-9]+.[0-9]+"]
 
 jobs:
   package:
@@ -68,8 +67,12 @@ jobs:
       - name: Replace App Version in Chart.yaml
         run: sed -i 's/APP_VERSION/${{ steps.app_version.outputs.tag }}/g' ./chart/Chart.yaml
 
-      - name: Set up Helm
-        uses: azure/setup-helm@v4.1.0
-
-      - name: Helm lint
-        run: helm lint ./chart
+      - name: Publish Helm chart
+        uses: stefanprodan/helm-gh-pages@master
+        with:
+          token: ${{ steps.authenticate.outputs.token }}
+          charts_dir: ./
+          charts_url: https://charts.krateo.io
+          owner: krateoplatformops
+          repository: helm-charts
+          branch: gh-pages
