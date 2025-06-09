@@ -1,38 +1,67 @@
 {{/*
-Helper template to define server URLs from the OpenAPI Specification files.
+Expand the name of the chart.
 */}}
+{{- define "github-provider-kog.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "github-provider-kog.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "github-provider-kog.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "github-provider-kog.labels" -}}
+helm.sh/chart: {{ include "github-provider-kog.chart" . }}
+{{ include "github-provider-kog.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "github-provider-kog.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "github-provider-kog.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "github-provider-kog.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "github-provider-kog.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
 
 {{- define "webServiceUrl" -}}
-http://{{ .Release.Name }}-plugin-krateo.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.webservice.service.port }}
-{{- end -}}
-
-{{- define "my-helm-chart.serverUrl" -}}
-{{- $url := .Values.openapi.serverUrl -}}
-{{- if $url -}}
-{{ $url | quote }}
-{{- else -}}
-""
-{{- end -}}
-{{- end -}}
-
-{{/*
-Helper template to define web service URLs from the OpenAPI Specification files.
-*/}}
-
-{{- define "my-helm-chart.webServiceUrl" -}}
-{{- $url := .Values.openapi.webServiceUrl -}}
-{{- if $url -}}
-{{ $url | quote }}
-{{- else -}}
-""
-{{- end -}}
-{{- end -}}
-
-{{/*
-Helper template to generate labels for resources.
-*/}}
-
-{{- define "my-helm-chart.labels" -}}
-app: {{ .Chart.Name }}
-release: {{ .Release.Name }}
+http://{{ include "github-provider-kog.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
 {{- end -}}
