@@ -1,0 +1,26 @@
+# Cleanup job - deletes the ConfigMap last
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-cleanup
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ .Release.Name }}-cleanup
+      restartPolicy: Never
+      containers:
+      - name: cleanup
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          kubectl delete configmap {{ .Release.Name }}-repo --ignore-not-found=true
+          kubectl delete configmap {{ .Release.Name }}-collaborator --ignore-not-found=true
+          kubectl delete configmap {{ .Release.Name }}-teamrepo --ignore-not-found=true
+          kubectl delete configmap {{ .Release.Name }}-workflow --ignore-not-found=true
+          kubectl delete configmap {{ .Release.Name }}-runnergroup --ignore-not-found=true
