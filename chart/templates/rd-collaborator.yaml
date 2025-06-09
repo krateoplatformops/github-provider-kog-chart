@@ -1,3 +1,4 @@
+{{- if .Values.restdefinitions.collaborator.enabled }}
 kind: RestDefinition
 apiVersion: swaggergen.krateo.io/v1alpha1
 metadata:
@@ -6,9 +7,9 @@ spec:
   oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-collaborator/collaborator.yaml
   resourceGroup: github.krateo.io
   resource: 
-    kind: Collaborators
+    kind: Collaborator
     identifiers:
-      - id 
+      - id
       - permissions
       - html_url
     verbsDescription:
@@ -24,3 +25,4 @@ spec:
     - action: update
       method: PUT
       path: /repos/{owner}/{repo}/collaborators/{username}
+{{ end }}

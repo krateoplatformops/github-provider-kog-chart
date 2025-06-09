@@ -1,0 +1,14 @@
+apiVersion: github.krateo.io/v1alpha1
+kind: Collaborator
+metadata:
+  name: add-collaborator
+  namespace: ghp
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  authenticationRefs:
+    bearerAuthRef: bearer-gh-ref
+  owner: leovice-org
+  repo: collaborator-tester
+  username: EdmondDantes21
+  permission: pull

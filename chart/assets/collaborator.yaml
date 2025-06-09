@@ -277,8 +277,25 @@ components:
     Perms:
       type: object
       properties:
+        html_url:
+          type: string
+        id:
+          type: integer
         permission:
           type: string
+        permissions:
+          type: object
+          properties:
+            pull:
+              type: boolean
+            push:
+              type: boolean
+            admin:
+              type: boolean
+            maintain:
+              type: boolean
+            triage:
+              type: boolean
         role_name:
           type: string
         user:

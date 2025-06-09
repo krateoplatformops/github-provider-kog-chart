@@ -1,3 +1,4 @@
+{{- if .Values.restdefinitions.workflow.enabled }}
 kind: RestDefinition
 apiVersion: swaggergen.krateo.io/v1alpha1
 metadata:
@@ -11,3 +12,4 @@ spec:
     - action: create
       method: POST
       path: /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches
+{{ end }}

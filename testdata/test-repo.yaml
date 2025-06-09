@@ -1,0 +1,15 @@
+apiVersion: github.krateo.io/v1alpha1
+kind: Repo
+metadata:
+  name: test-repo1
+  namespace: ghp
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  authenticationRefs:
+    bearerAuthRef: bearer-gh-ref
+  org: krateoplatformops-test
+  name: test-repo1
+  description: A short description of the repository set by Krateo
+  visibility: public
+  has_issues: true

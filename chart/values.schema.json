@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "restdefinitions": {
+      "additionalProperties": false,
+      "properties": {
+        "collaborator": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "collaborator",
+          "type": "object"
+        },
+        "repo": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "repo",
+          "type": "object"
+        },
+        "runnergroup": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "runnergroup",
+          "type": "object"
+        },
+        "teamrepo": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "teamrepo",
+          "type": "object"
+        },
+        "workflow": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "workflow",
+          "type": "object"
+        }
+      },
+      "required": [
+        "collaborator",
+        "repo",
+        "teamrepo",
+        "workflow",
+        "runnergroup"
+      ],
+      "title": "restdefinitions",
+      "type": "object"
+    },
+    "webservice": {
+      "additionalProperties": false,
+      "properties": {
+        "image": {
+          "additionalProperties": false,
+          "properties": {
+            "imagePullPolicy": {
+              "default": "Always",
+              "required": [],
+              "title": "imagePullPolicy",
+              "type": "string"
+            },
+            "ports": {
+              "additionalProperties": false,
+              "properties": {
+                "containerPort": {
+                  "default": 8080,
+                  "required": [],
+                  "title": "containerPort",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "containerPort"
+              ],
+              "title": "ports",
+              "type": "object"
+            },
+            "repository": {
+              "default": "leovice/github-rest-dynamic-controller-plugin",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "dev",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "tag",
+            "imagePullPolicy",
+            "ports"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": false,
+          "properties": {
+            "port": {
+              "default": 8080,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "port"
+          ],
+          "title": "service",
+          "type": "object"
+        }
+      },
+      "required": [
+        "service",
+        "image"
+      ],
+      "title": "webservice",
+      "type": "object"
+    }
+  },
+  "required": [
+    "webservice",
+    "restdefinitions"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,14 @@
+apiVersion: github.krateo.io/v1alpha1
+kind: RunnerGroup
+metadata:
+  name: runner-test
+  namespace: ghp
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  authenticationRefs:
+    bearerAuthRef: bearer-gh-ref
+  name: runner-test-by-krateo-updated-v5
+  org: krateoplatformops-test
+  visibility: private
+  allows_public_repositories: false
