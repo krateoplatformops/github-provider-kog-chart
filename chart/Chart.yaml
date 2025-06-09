@@ -1,5 +1,5 @@
 name: github-provider-kog
-version: 0.0.2
+version: CHART_VERSION
 description: A Helm chart for deploying GitHub Provider
 type: application
 apiVersion: v2
