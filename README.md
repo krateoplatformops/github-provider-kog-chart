@@ -32,7 +32,7 @@ helm install github-provider krateo/github-provider-kog
 ```
 
 > [!NOTE]
-> Due to the nature of the providers created leveraging the Krateo OASGen Provider, the chart will install a set of RestDefinitions that will in turn trigger the deployment of controllers in the cluster. These controllers need to be up and running before you can create or manage resources using the Custom Resources (CRs) defined in this chart. This may take a few minutes after the chart is installed.
+> Due to the nature of the providers leveraging the [Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider), this chart will install a set of RestDefinitions that will in turn trigger the deployment of controllers in the cluster. These controllers need to be up and running before you can create or manage resources using the Custom Resources (CRs) defined by this provider. This may take a few minutes after the chart is installed.
 
 You can check the status of the controllers by running:
 ```sh
@@ -43,7 +43,7 @@ done
 kubectl wait deployments github-provider-<RESOURCE>-controller --for condition=Available=True --namespace <YOUR_NAMESPACE> --timeout=300s
 ```
 
-where `<RESOURCE>` is one of the resources supported by the chart, such as `repo`, `collaborator`, `teamrepo`, or `workflow`.
+Make sure to replace `<RESOURCE>` to one of the resources supported by the chart, such as `repo`, `collaborator`, `teamrepo`, or `workflow`.
 
 ## Supported resources
 
@@ -55,6 +55,7 @@ This chart supports the following resources and operations:
 | Repo         | ✅   | ✅     | ✅     | ✅     |
 | TeamRepo     | ✅   | ✅     | ✅     | ✅     |
 | Workflow     | ✅   | ✅     | 🚫 Not applicable    | 🚫 Not applicable     |
+| RunnerGroup     | ✅   | ✅     | ✅     | ✅     |
 
 > [!NOTE]  
 > 🚫 *"Not applicable"* indicates that the operation is not supported because it probably does not make sense for the resource type.  For example, GitHub Workflow runs are typically not updated or deleted directly; they are triggered and if a new run is needed, a new workflow run is created.
@@ -160,6 +161,28 @@ spec:
     custom_message: "Test 04/06 at 13:42 from Krateo"
 ```
 
+#### RunnerGroup
+
+The `RunnerGroup` resource allows you to manage GitHub runner groups. You can specify the runner group name, and any additional settings required by the runner group such as `visibility` and `allows_public_repositories`.
+
+An example of a RunnerGroup resource is:
+```yaml
+apiVersion: github.krateo.io/v1alpha1
+kind: RunnerGroup
+metadata:
+  name: runnergroup-test
+  namespace: ghp
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  authenticationRefs:
+    bearerAuthRef: bearer-gh-ref
+  name: runner-test-by-krateo
+  org: krateoplatformops-test
+  visibility: private
+  allows_public_repositories: false
+```
+
 ## Authentication
 
 The authentication to the GitHub API is managed using 2 resources (both are required):
@@ -200,7 +223,8 @@ spec:
 
 ## Configuration
 
-You can customize the chart by modifying the `values.yaml` file. For instance, you can select which resources the provider should support in the oncoming installation by setting the `restdefinitions` field in the `values.yaml` file. The default configuration enables all resources supported by the chart.
+You can customize the chart by modifying the `values.yaml` file.
+For instance, you can select which resources the provider should support in the oncoming installation by setting the `restdefinitions` field in the `values.yaml` file. The default configuration enables all resources supported by the chart.
 
 ## Chart structure
 
@@ -221,4 +245,4 @@ They also define the operations that can be performed on those resources. Once t
 
 ## Requirements
 
-Krateo OASGen Provider should be installed in your cluster. Follow the related Helm Chart [README](https://github.com/krateoplatformops/oasgen-provider-chart) for installation instructions.
+[Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider) should be installed in your cluster. Follow the related Helm Chart [README](https://github.com/krateoplatformops/oasgen-provider-chart) for installation instructions.
