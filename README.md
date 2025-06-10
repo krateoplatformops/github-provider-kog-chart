@@ -32,25 +32,31 @@ helm install github-provider krateo/github-provider-kog
 ```
 
 > [!NOTE]
-> Due to the nature of the providers created levelaging the Krateo OASGen Provider, the chart will install a set of RestDefinitions that will in turn trigger the deployment of controllers in the cluster. These controllers need to be up and running before you can create or manage resources using the Custom Resources (CRs) defined in this chart. You can check the status of the controllers by running:
+> Due to the nature of the providers created leveraging the Krateo OASGen Provider, the chart will install a set of RestDefinitions that will in turn trigger the deployment of controllers in the cluster. These controllers need to be up and running before you can create or manage resources using the Custom Resources (CRs) defined in this chart. This may take a few minutes after the chart is installed.
+
+You can check the status of the controllers by running:
 ```sh
-until kubectl get deployment github-provider-repo-controller -n krateo-system &>/dev/null; do
-  echo "Waiting for Repo controller deployment to be created..."
+until kubectl get deployment github-provider-<RESOURCE>-controller -n <YOUR_NAMESPACE> &>/dev/null; do
+  echo "Waiting for <RESOURCE> controller deployment to be created..."
   sleep 5
 done
-kubectl wait deployments github-provider-repo-controller --for condition=Available=True --namespace krateo-system --timeout=300s
+kubectl wait deployments github-provider-<RESOURCE>-controller --for condition=Available=True --namespace <YOUR_NAMESPACE> --timeout=300s
 ```
+
+where `<RESOURCE>` is one of the resources supported by the chart, such as `repo`, `collaborator`, `teamrepo`, or `workflow`.
+
 ## Supported resources
 
 This chart supports the following resources and operations:
 
+<div align="center">
 | Resource     | Get  | Create | Update | Delete |
 |--------------|------|--------|--------|--------|
 | Collaborator | ✅   | ✅     | ✅     | ✅     |
 | Repo         | ✅   | ✅     | ✅     | ✅     |
 | TeamRepo     | ✅   | ✅     | ✅     | ✅     |
 | Workflow     | ✅   | ✅     | 🚫 Not applicable    | 🚫 Not applicable     |
-
+</div>
 
 > [!NOTE]  
 > 🚫 *"Not applicable"* indicates that the operation is not supported because it probably does not make sense for the resource type.  For example, GitHub Workflow runs are typically not updated or deleted directly; they are triggered and if a new run is needed, a new workflow run is created.
