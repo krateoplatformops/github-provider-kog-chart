@@ -1,9 +1,24 @@
 # GitHub Provider Helm Chart
 
 This is a [Helm Chart](https://helm.sh/docs/topics/charts/) that deploys the Krateo GitHub Provider leveraging the [Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider) and using [OpenAPI Specifications (OAS) of the GitHub API](https://github.com/github/rest-api-description/blob/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml).
+This provider allows you to manage GitHub resources such as repositories, collaborators, and workflow runs using the Krateo platform.
 
 > [!NOTE]  
 > This chart is going to replace the [original Krateo github-provider](https://github.com/krateoplatformops/github-provider) in the future. 
+
+## Summary
+
+- [Summary](#summary)
+- [How to Install](#how-to-install)
+- [Supported Resources](#supported-resources)
+  - [Resource Details](#resource-details)
+    - [Repo](#repo)
+    - [Collaborator](#collaborator)
+    - [TeamRepo](#teamrepo)
+    - [Workflow](#workflow)
+- [Configuration](#configuration)
+- [Chart Structure](#chart-structure)
+- [Requirements](#requirements)
 
 ## How to install
 
@@ -29,6 +44,8 @@ This chart supports the following resources and operations:
 
 > [!NOTE]  
 > 🚫 *"Not applicable"* indicates that the operation is not supported because it probably does not make sense for the resource type.  For example, GitHub Workflow runs are typically not updated or deleted directly; they are triggered and if a new run is needed, a new workflow run is created.
+
+The resources listed above are Custom Resources (CRs) defined in the `github.krateo.io` API group. They are used to manage GitHub resources in a Kubernetes-native way, allowing you to create, update, and delete GitHub resources using Kubernetes manifests.
 
 ### Resource details
 
@@ -78,21 +95,63 @@ spec:
   permission: pull
 ```
 
+#### TeamRepo
 
+Manage team access to GitHub repositories.
+The `TeamRepo` resource allows you to manage team access to GitHub repositories. You can specify the `team_slug`, repository name, and permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
 
+> [!NOTE]
+> The `TeamRepo` resource is not a standard GitHub resource but allows you to manage team access to repositories in a way that is consistent with the other resources in this chart.
 
+An example of a TeamRepo resource is:
+```yaml
+apiVersion: github.krateo.io/v1alpha1
+kind: TeamRepo
+metadata:
+  name: test-teamrepo
+  namespace: ghp
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  authenticationRefs:
+    bearerAuthRef: bearer-gh-ref
+  org: krateoplatformops-test
+  owner: krateoplatformops-test
+  team_slug: testteam
+  repo: teamrepo-tester
+  permission: pull
+```
 
+#### Workflow
+Manage GitHub workflow runs.
+The `Workflow` resource allows you to trigger workflow runs in a GitHub repository. You can specify the repository name, workflow file name, and any input parameters required by the workflow. 
 
-
-
-
-- **Repo**: Manage GitHub repositories, including creation, updates, and deletion.
-- **TeamRepo**: Manage team access to GitHub repositories.
-- **Workflow**: Manage GitHub workflow runs, in particular, triggering workflow runs.
+An example of a Workflow resource is:
+```yaml
+apiVersion: github.krateo.io/v1alpha1
+kind: Workflow
+metadata:
+  name: workflow-tester
+  namespace: ghp
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  authenticationRefs:
+    bearerAuthRef: bearer-gh-ref
+  owner: krateoplatformops-test
+  repo: workflow-tester
+  workflow_id: test.yaml
+  ref: main
+  inputs:
+    environment: development
+    version: "v1.2.3"
+    debug_enabled: "false"
+    custom_message: "Test 04/06 at 13:42 from Krateo"
+```
 
 ## Configuration
 
-You can customize the chart by modifying the `values.yaml` file. This file contains default configuration values, including server URLs and other parameters.
+You can customize the chart by modifying the `values.yaml` file. For instance, you can select which resource the provider should support in the oncoming installation by setting the `restdefinitions` field in the `values.yaml` file. The default configuration enables all resources supported by the chart.
 
 ## Chart structure
 
@@ -106,10 +165,7 @@ The chart contains:
 
 - **Service**: Exposes the plugin to the cluster.
 
-## Usage
-
-After installation, you can access the application using the service created by this chart. The server URLs defined in the OAS will be templated and utilized by the application.
 
 ## Requirements
 
-`oasgen-provider-chart` should be installed in your cluster. Follow the [README](https://github.com/krateoplatformops/oasgen-provider-chart) for installation instructions.
+Krateo OASGen Provider should be installed in your cluster. Follow the related Helm Chart [README](https://github.com/krateoplatformops/oasgen-provider-chart) for installation instructions.
