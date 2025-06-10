@@ -51,7 +51,6 @@ The resources listed above are Custom Resources (CRs) defined in the `github.kra
 
 #### Repo
 
-Manage GitHub repositories.
 The `Repo` resource allows you to create, update, and delete GitHub repositories. You can specify the repository name, description, visibility (public or private), and other settings that can be seen in the [GitHub API documentation](https://docs.github.com/en/rest/repos?apiVersion=2022-11-28) and the selected OpenAPI Specification in the `/assets` folder of this chart.
 An example of a Repo resource is:
 ```yaml
@@ -74,7 +73,6 @@ spec:
 
 #### Collaborator 
 
-Manage collaborators in a GitHub repository.
 The `Collaborator` resource allows you to add or remove collaborators from a GitHub repository. You can specify the username of the collaborator and the permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
 
 An example of a Collaborator resource is:
@@ -97,7 +95,6 @@ spec:
 
 #### TeamRepo
 
-Manage team access to GitHub repositories.
 The `TeamRepo` resource allows you to manage team access to GitHub repositories. You can specify the `team_slug`, repository name, and permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
 
 > [!NOTE]
@@ -123,7 +120,7 @@ spec:
 ```
 
 #### Workflow
-Manage GitHub workflow runs.
+
 The `Workflow` resource allows you to trigger workflow runs in a GitHub repository. You can specify the repository name, workflow file name, and any input parameters required by the workflow. 
 
 An example of a Workflow resource is:
@@ -151,19 +148,21 @@ spec:
 
 ## Configuration
 
-You can customize the chart by modifying the `values.yaml` file. For instance, you can select which resource the provider should support in the oncoming installation by setting the `restdefinitions` field in the `values.yaml` file. The default configuration enables all resources supported by the chart.
+You can customize the chart by modifying the `values.yaml` file. For instance, you can select which resources the provider should support in the oncoming installation by setting the `restdefinitions` field in the `values.yaml` file. The default configuration enables all resources supported by the chart.
 
 ## Chart structure
 
-The chart contains:
+Main components of the chart:
 
 - **/assets** folder: Contains the selected OpenAPI Specification files for the GitHub API.
 
-- **ConfigMaps**: Refer to the OpenAPI Specification content.
+- **ConfigMaps**: Refer directly to the OpenAPI Specification content.
 
-- **Deployment**: Deploys the plugin that is used as a proxy for the GitHub API to resolve some inconsistencies in the OpenAPI Specification.
+- **Deployment**: Deploys a [plugin](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin) that is used as a proxy for the GitHub API to resolve some inconsistencies in the OpenAPI Specification. The spacific endpoins managed by the plugin are described in the [plugin README](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin/blob/main/README.md)
 
 - **Service**: Exposes the plugin to the cluster.
+
+- **/samples** folder: Contains example resources for each supported resource type as seen in this README. These examples demonstrate how to create and manage GitHub resources using the Krateo OASGen Provider.
 
 
 ## Requirements
