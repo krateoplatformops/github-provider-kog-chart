@@ -16,6 +16,7 @@ This provider allows you to manage GitHub resources such as repositories, collab
     - [Collaborator](#collaborator)
     - [TeamRepo](#teamrepo)
     - [Workflow](#workflow)
+    - [RunnerGroup](#runnergroup)
 - [Authentication](#authentication)
 - [Configuration](#configuration)
 - [Chart structure](#chart-structure)
