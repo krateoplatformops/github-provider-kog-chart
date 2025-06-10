@@ -49,14 +49,14 @@ where `<RESOURCE>` is one of the resources supported by the chart, such as `repo
 
 This chart supports the following resources and operations:
 
-<div align="center">
+<center>
 | Resource     | Get  | Create | Update | Delete |
 |--------------|------|--------|--------|--------|
 | Collaborator | ✅   | ✅     | ✅     | ✅     |
 | Repo         | ✅   | ✅     | ✅     | ✅     |
 | TeamRepo     | ✅   | ✅     | ✅     | ✅     |
 | Workflow     | ✅   | ✅     | 🚫 Not applicable    | 🚫 Not applicable     |
-</div>
+</center>
 
 > [!NOTE]  
 > 🚫 *"Not applicable"* indicates that the operation is not supported because it probably does not make sense for the resource type.  For example, GitHub Workflow runs are typically not updated or deleted directly; they are triggered and if a new run is needed, a new workflow run is created.
