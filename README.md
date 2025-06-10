@@ -9,15 +9,16 @@ This provider allows you to manage GitHub resources such as repositories, collab
 ## Summary
 
 - [Summary](#summary)
-- [How to Install](#how-to-install)
-- [Supported Resources](#supported-resources)
-  - [Resource Details](#resource-details)
+- [How to install](#how-to-install)
+- [Supported resources](#supported-resources)
+  - [Resource details](#resource-details)
     - [Repo](#repo)
     - [Collaborator](#collaborator)
     - [TeamRepo](#teamrepo)
     - [Workflow](#workflow)
+- [Authentication](#authentication)
 - [Configuration](#configuration)
-- [Chart Structure](#chart-structure)
+- [Chart structure](#chart-structure)
 - [Requirements](#requirements)
 
 ## How to install
@@ -30,6 +31,15 @@ helm repo update krateo
 helm install github-provider krateo/github-provider-kog
 ```
 
+> [!NOTE]
+> Due to the nature of the providers created levelaging the Krateo OASGen Provider, the chart will install a set of RestDefinitions that will in turn trigger the deployment of controllers in the cluster. These controllers need to be up and running before you can create or manage resources using the Custom Resources (CRs) defined in this chart. You can check the status of the controllers by running:
+```sh
+until kubectl get deployment github-provider-repo-controller -n krateo-system &>/dev/null; do
+  echo "Waiting for Repo controller deployment to be created..."
+  sleep 5
+done
+kubectl wait deployments github-provider-repo-controller --for condition=Available=True --namespace krateo-system --timeout=300s
+```
 ## Supported resources
 
 This chart supports the following resources and operations:
@@ -146,6 +156,44 @@ spec:
     custom_message: "Test 04/06 at 13:42 from Krateo"
 ```
 
+## Authentication
+
+The authentication to the GitHub API is managed using 2 resources (both are required):
+
+- **Kubernetes Secret**: This resource is used to store the GitHub Personal Access Token (PAT) that is used to authenticate with the GitHub API. The PAT should have the necessary permissions to manage the resources you want to create or update.
+
+In order to generate a GitHub token, follow this instructions: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
+
+Example of a Kubernetes Secret:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gh-token
+  namespace: krateo-system
+type: Opaque
+stringData:
+  token: <PAT>
+```
+
+Replace `<PAT>` with your actual GitHub Personal Access Token which should look like `ghp_XXXXXXXXXXXXXXXXXXXXXXXX`.
+
+- **BearerAuth**: This resource references the Kubernetes Secret and is used to authenticate with the GitHub API. It is used in the `authenticationRefs` field of the resources defined in this chart.
+
+Example of a BearerAuth resource:
+```yaml
+apiVersion: github.krateo.io/v1alpha1
+kind: BearerAuth
+metadata:
+  name: bearer-gh-ref
+  namespace: ghp
+spec:
+  tokenRef:
+    key: token
+    name: gh-token
+    namespace: krateo-system
+```
+
 ## Configuration
 
 You can customize the chart by modifying the `values.yaml` file. For instance, you can select which resources the provider should support in the oncoming installation by setting the `restdefinitions` field in the `values.yaml` file. The default configuration enables all resources supported by the chart.
@@ -154,16 +202,18 @@ You can customize the chart by modifying the `values.yaml` file. For instance, y
 
 Main components of the chart:
 
+- **RestDefinitions**: These are the core resources needed to manage resources leveraging the Krateo OASGen Provider. In this case, they refers to the OpenAPI Specification to be used for the creation of the Custom Resources (CRs) that represent GitHub resources.
+They also define the operations that can be performed on those resources. Once the chart is installed, RestDefinitions will be created and as a result, specific controllers will be deployed in the cluster to manage the resources defined with those RestDefinitions.
+
+- **ConfigMaps**: Refer directly to the OpenAPI Specification content in the `/assets` folder.
+
 - **/assets** folder: Contains the selected OpenAPI Specification files for the GitHub API.
 
-- **ConfigMaps**: Refer directly to the OpenAPI Specification content.
+- **/samples** folder: Contains example resources for each supported resource type as seen in this README. These examples demonstrate how to create and manage GitHub resources using the Krateo GitHub Provider.
 
 - **Deployment**: Deploys a [plugin](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin) that is used as a proxy for the GitHub API to resolve some inconsistencies in the OpenAPI Specification. The spacific endpoins managed by the plugin are described in the [plugin README](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin/blob/main/README.md)
 
-- **Service**: Exposes the plugin to the cluster.
-
-- **/samples** folder: Contains example resources for each supported resource type as seen in this README. These examples demonstrate how to create and manage GitHub resources using the Krateo OASGen Provider.
-
+- **Service**: Exposes the plugin described above, allowing the resource controllers to communicate with the GitHub API through the plugin, if needed.
 
 ## Requirements
 
