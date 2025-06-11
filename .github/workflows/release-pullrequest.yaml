@@ -10,27 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Extract and Store Trimmed Repository Name
-        run: |
-          REPO_CHART_NAME="${{ github.repository }}"
-          REPO_APP_NAME=$(echo "$REPO_CHART_NAME" | sed 's/-chart$//')  # Remove "-chart" suffix if present
-          
-          # Check if the trimmed repo exists
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/$REPO_APP_NAME")
-
-          if [[ "$HTTP_STATUS" -eq 200 ]]; then
-            echo "Using trimmed repository name: $REPO_APP_NAME"
-            echo "REPO_APP_NAME=$REPO_APP_NAME" >> $GITHUB_ENV
-          else
-            echo "Trimmed repository not found. Falling back to original repository name."
-            echo "REPO_APP_NAME=$REPO_CHART_NAME" >> $GITHUB_ENV
-          fi
-
-      - name: Use the Stored Variable
-        run: |
-          echo "Trimmed Repository Name: ${{ env.REPO_APP_NAME }}"
 
       - name: Authenticate with GitHub App
         id: authenticate
@@ -49,7 +28,7 @@ jobs:
         uses: tdemin/find-latest-tag@v1
         id: app_version
         with:
-          repo: https://${{ steps.authenticate.outputs.token }}@github.com/${{ env.REPO_APP_NAME }}.git
+          repo: https://${{ steps.authenticate.outputs.token }}@github.com/krateoplatformops/github-rest-dynamic-controller-plugin.git
 
       - name: Checkout
         uses: actions/checkout@v3
