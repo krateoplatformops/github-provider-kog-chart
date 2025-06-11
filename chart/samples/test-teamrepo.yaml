@@ -8,8 +8,8 @@ metadata:
 spec:
   authenticationRefs:
     bearerAuthRef: bearer-gh-ref
-  org: leovice-org
-  owner: leovice-org
-  team_slug: testteam
-  repo: teamrepo-tester
-  permission: pull
+  org: krateoplatformops-test
+  owner: krateoplatformops-test
+  team_slug: test-team
+  repo: test-teamrepo
+  permission: admin
