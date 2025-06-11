@@ -38,7 +38,7 @@ jobs:
           echo APP_VERSION:${{steps.app_version.outputs.tag}}
           echo CHART_VERSION:${{steps.chart_version.outputs.tag}}
 
-      - name: Replace Version in Chart.yaml
+      - name: Replace Chart Version in Chart.yaml
         run: sed -i 's/CHART_VERSION/${{ steps.chart_version.outputs.tag }}/g' ./chart/Chart.yaml
 
       - name: Print latest App Version
