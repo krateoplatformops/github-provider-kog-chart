@@ -222,8 +222,15 @@ spec:
 
 ## Configuration
 
+### values.yaml
+
 You can customize the chart by modifying the `values.yaml` file.
 For instance, you can select which resources the provider should support in the oncoming installation by setting the `restdefinitions` field in the `values.yaml` file. The default configuration enables all resources supported by the chart.
+
+### Verbose logging
+
+In order to enable verbose logging for the controllers, you can add the `krateo.io/connector-verbose: "true"` annotation to the metadata of the resources you want to manage, as shown in the examples above. 
+This will enable verbose logging for those specific resources, which can be useful for debugging and troubleshooting.
 
 ## Chart structure
 
