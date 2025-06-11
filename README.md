@@ -19,6 +19,8 @@ This provider allows you to manage GitHub resources such as repositories, collab
     - [RunnerGroup](#runnergroup)
 - [Authentication](#authentication)
 - [Configuration](#configuration)
+  - [values.yaml](#valuesyaml)
+  - [Verbose logging](#verbose-logging)
 - [Chart structure](#chart-structure)
 - [Requirements](#requirements)
 
