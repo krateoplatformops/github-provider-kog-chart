@@ -68,6 +68,7 @@ The resources listed above are Custom Resources (CRs) defined in the `github.kra
 #### Repo
 
 The `Repo` resource allows you to create, update, and delete GitHub repositories. You can specify the repository name, description, visibility (public or private), and other settings that can be seen in the [GitHub API documentation](https://docs.github.com/en/rest/repos?apiVersion=2022-11-28) and the selected OpenAPI Specification in the `/assets` folder of this chart.
+
 An example of a Repo resource is:
 ```yaml
 apiVersion: github.krateo.io/v1alpha1
@@ -112,9 +113,6 @@ spec:
 #### TeamRepo
 
 The `TeamRepo` resource allows you to manage team access to GitHub repositories. You can specify the `team_slug`, repository name, and permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
-
-> [!NOTE]
-> The `TeamRepo` resource is not a standard GitHub resource but allows you to manage team access to repositories in a way that is consistent with the other resources in this chart.
 
 An example of a TeamRepo resource is:
 ```yaml
