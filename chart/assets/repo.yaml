@@ -104,7 +104,7 @@ paths:
         category: repos
         subcategory: repos
         patch:
-    patch:  
+    patch:
       summary: Update a repository
       description: "**Note**: To edit a repository's topics, use the [Replace all
         repository topics](https://docs.github.com/rest/repos/repos#replace-all-repository-topics)
@@ -154,73 +154,6 @@ paths:
                   enum:
                   - public
                   - private
-                security_and_analysis:
-                  type: object
-                  description: |-
-                    Specify which security and analysis features to enable or disable for the repository.
-
-                    To use this parameter, you must have admin permissions for the repository or be an owner or security manager for the organization that owns the repository. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
-
-                    For example, to enable GitHub Advanced Security, use this data in the body of the `PATCH` request:
-                    `{ "security_and_analysis": {"advanced_security": { "status": "enabled" } } }`.
-
-                    You can check which security and analysis features are currently enabled by using a `GET /repos/{owner}/{repo}` request.
-                  nullable: true
-                  properties:
-                    advanced_security:
-                      type: object
-                      description: Use the `status` property to enable or disable
-                        GitHub Advanced Security for this repository. For more information,
-                        see "[About GitHub Advanced Security](/github/getting-started-with-github/learning-about-github/about-github-advanced-security)."
-                      properties:
-                        status:
-                          type: string
-                          description: Can be `enabled` or `disabled`.
-                    code_security:
-                      type: object
-                      description: Use the `status` property to enable or disable
-                        GitHub Code Security for this repository.
-                      properties:
-                        status:
-                          type: string
-                          description: Can be `enabled` or `disabled`.
-                    secret_scanning:
-                      type: object
-                      description: Use the `status` property to enable or disable
-                        secret scanning for this repository. For more information,
-                        see "[About secret scanning](/code-security/secret-security/about-secret-scanning)."
-                      properties:
-                        status:
-                          type: string
-                          description: Can be `enabled` or `disabled`.
-                    secret_scanning_push_protection:
-                      type: object
-                      description: Use the `status` property to enable or disable
-                        secret scanning push protection for this repository. For more
-                        information, see "[Protecting pushes with secret scanning](/code-security/secret-scanning/protecting-pushes-with-secret-scanning)."
-                      properties:
-                        status:
-                          type: string
-                          description: Can be `enabled` or `disabled`.
-                    secret_scanning_ai_detection:
-                      type: object
-                      description: Use the `status` property to enable or disable
-                        secret scanning AI detection for this repository. For more
-                        information, see "[Responsible detection of generic secrets
-                        with AI](https://docs.github.com/code-security/secret-scanning/using-advanced-secret-scanning-and-push-protection-features/generic-secret-detection/responsible-ai-generic-secrets)."
-                      properties:
-                        status:
-                          type: string
-                          description: Can be `enabled` or `disabled`.
-                    secret_scanning_non_provider_patterns:
-                      type: object
-                      description: Use the `status` property to enable or disable
-                        secret scanning non-provider patterns for this repository.
-                        For more information, see "[Supported secret scanning patterns](/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)."
-                      properties:
-                        status:
-                          type: string
-                          description: Can be `enabled` or `disabled`.
                 has_issues:
                   type: boolean
                   description: Either `true` to enable issues for this repository
@@ -244,9 +177,6 @@ paths:
                   description: Either `true` to make this repo available as a template
                     repository or `false` to prevent it.
                   default: false
-                default_branch:
-                  type: string
-                  description: Updates the default branch for this repository.
                 allow_squash_merge:
                   type: boolean
                   description: Either `true` to allow squash-merging pull requests,
@@ -272,19 +202,14 @@ paths:
                   type: boolean
                   description: Either `true` to allow automatically deleting head
                     branches when pull requests are merged, or `false` to prevent
-                    automatic deletion.
-                  default: false
-                allow_update_branch:
-                  type: boolean
-                  description: Either `true` to always allow a pull request head branch
-                    that is behind its base branch to be updated even if it is not
-                    required to be up to date before merging, or false otherwise.
+                    automatic deletion. **The authenticated user must be an organization
+                    owner to set this property to `true`.**
                   default: false
                 use_squash_pr_title_as_default:
                   type: boolean
                   description: Either `true` to allow squash-merge commits to use
                     pull request title, or `false` to use commit message. **This property
-                    is closing down. Please use `squash_merge_commit_title` instead.
+                    has been deprecated. Please use `squash_merge_commit_title` instead.
                   default: false
                   deprecated: true
                 squash_merge_commit_title:
@@ -334,23 +259,7 @@ paths:
 
                     - `PR_TITLE` - default to the pull request's title.
                     - `PR_BODY` - default to the pull request's body.
-                    - `BLANK` - default to a blank commit message.
-                archived:
-                  type: boolean
-                  description: Whether to archive this repository. `false` will unarchive
-                    a previously archived repository.
-                  default: false
-                allow_forking:
-                  type: boolean
-                  description: Either `true` to allow private forks, or `false` to
-                    prevent private forks.
-                  default: false
-                web_commit_signoff_required:
-                  type: boolean
-                  description: Either `true` to require contributors to sign off on
-                    web-based commits, or `false` to not require contributors to sign
-                    off on web-based commits.
-                  default: false
+                    - `BLANK` - default to a blank commit message.     
             examples:
               default:
                 value:
