@@ -24,6 +24,7 @@ This provider allows you to manage GitHub resources such as repositories, collab
   - [values.yaml](#valuesyaml)
   - [Verbose logging](#verbose-logging)
 - [Chart structure](#chart-structure)
+- [Troubleshooting](#troubleshooting)
 
 ## Requirements
 
@@ -259,3 +260,7 @@ They also define the operations that can be performed on those resources. Once t
 - **Deployment**: Deploys a [plugin](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin) that is used as a proxy for the GitHub API to resolve some inconsistencies in the OpenAPI Specification. The spacific endpoins managed by the plugin are described in the [plugin README](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin/blob/main/README.md)
 
 - **Service**: Exposes the plugin described above, allowing the resource controllers to communicate with the GitHub API through the plugin, if needed.
+
+## Troubleshooting
+
+For troubleshooting, you can refer to the [Troubleshooting guide](./docs/troubleshooting.md) in the `/docs` folder of this chart. It contains common issues and solutions related to this chart.
