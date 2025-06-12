@@ -1,19 +1,19 @@
 apiVersion: github.krateo.io/v1alpha1
 kind: Workflow
 metadata:
-  name: workflow-tester
+  name: workflow-tester1
   namespace: ghp
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
   authenticationRefs:
     bearerAuthRef: bearer-gh-ref
-  owner: leovice-org
+  owner: krateoplatformops-test
   repo: workflow-tester
-  workflow_id: test.yaml
-  ref: main
+  workflow_id: test.yaml   # Can be the workflow file name
+  ref: main                # branch or tag name
   inputs:
     environment: production
     version: "v1.2.3"
     debug_enabled: "false"
-    custom_message: "Test 04/06 at 13:42 from Krateo"
+    custom_message: "Test from Krateo"
