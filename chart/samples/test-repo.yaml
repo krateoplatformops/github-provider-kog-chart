@@ -13,3 +13,7 @@ spec:
   description: A short description of the repository set by Krateo
   visibility: public
   has_issues: true
+  auto_init: true
+  homepage: "http://example.com"
+  gitignore_template: "Go"
+  license_template: "mit"
