@@ -8,7 +8,17 @@ metadata:
 spec:
   authenticationRefs:
     bearerAuthRef: bearer-gh-ref
-  name: runner-test-by-krateo-updated-v5
+  name: runner-test-by-krateo
   org: krateoplatformops-test
-  visibility: private
   allows_public_repositories: false
+  restricted_to_workflows: false
+  #runners:  # List of runners IDs to add to the runner group.
+  #  - 00000001
+  #  - 00000002
+  #selected_repository_ids:  # List of repository IDs that can access the runner group.
+  #  - 1230000001
+  #  - 1230000002
+  #selected_workflows:  # List of workflows the runner group should be allowed to run, ignored unless `restricted_to_workflows` is set to `true`.
+  #  - workflow-test-1
+  #  - workflow-test-2
+  visibility: private # Visibility of the runner group by repositories. You can select all. private or selected repositories (`all`, `private`, or `selected`).
