@@ -52,7 +52,7 @@ done
 kubectl wait deployments github-provider-<RESOURCE>-controller --for condition=Available=True --namespace <YOUR_NAMESPACE> --timeout=300s
 ```
 
-Make sure to replace `<RESOURCE>` to one of the resources supported by the chart, such as `repo`, `collaborator`, `teamrepo`, or `workflow`.
+Make sure to replace `<RESOURCE>` to one of the resources supported by the chart, such as `repo`, `collaborator`, `teamrepo`, `workflow` or `runnergroup`, and `<YOUR_NAMESPACE>` with the namespace where you installed the chart.
 
 ## Supported resources
 
