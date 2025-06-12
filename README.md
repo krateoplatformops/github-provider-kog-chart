@@ -18,6 +18,7 @@ This provider allows you to manage GitHub resources such as repositories, collab
     - [TeamRepo](#teamrepo)
     - [Workflow](#workflow)
     - [RunnerGroup](#runnergroup)
+  - [Resource examples](#resource-examples)
 - [Authentication](#authentication)
 - [Configuration](#configuration)
   - [values.yaml](#valuesyaml)
@@ -187,6 +188,10 @@ spec:
   visibility: private
   allows_public_repositories: false
 ```
+
+### Resource examples
+
+You can find example resources for each supported resource type in the `/samples` folder of the chart.
 
 ## Authentication
 
