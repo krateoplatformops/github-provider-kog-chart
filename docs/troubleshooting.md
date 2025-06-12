@@ -111,8 +111,8 @@ The workflow will not be triggered at all and you will receive an error like thi
   "documentation_url": "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event",
   "status": "422"
 }
+```
 
 This error can be seen by setting the annotation `krateo.io/connector-verbose: "true"` in the Workflow CR and checking the logs of the workflow controller.
 To resolve this issue, ensure that the `inputs` field in your Workflow CR only contains keys that are defined in the workflow file. 
 Remove any extraneous fields that do not match the workflow's input definitions.
-```
