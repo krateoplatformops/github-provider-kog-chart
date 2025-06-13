@@ -8,7 +8,7 @@ metadata:
 spec:
   authenticationRefs:
     bearerAuthRef: bearer-gh-ref
-  owner: leovice-org
-  repo: collaborator-tester
-  username: EdmondDantes21
-  permission: pull
+  owner: krateoplatformops-test
+  repo: test-collaborator
+  username: FrancescoL96
+  permission: push

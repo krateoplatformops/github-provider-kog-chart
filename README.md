@@ -18,11 +18,13 @@ This provider allows you to manage GitHub resources such as repositories, collab
     - [TeamRepo](#teamrepo)
     - [Workflow](#workflow)
     - [RunnerGroup](#runnergroup)
+  - [Resource examples](#resource-examples)
 - [Authentication](#authentication)
 - [Configuration](#configuration)
   - [values.yaml](#valuesyaml)
   - [Verbose logging](#verbose-logging)
 - [Chart structure](#chart-structure)
+- [Troubleshooting](#troubleshooting)
 
 ## Requirements
 
@@ -50,7 +52,7 @@ done
 kubectl wait deployments github-provider-<RESOURCE>-controller --for condition=Available=True --namespace <YOUR_NAMESPACE> --timeout=300s
 ```
 
-Make sure to replace `<RESOURCE>` to one of the resources supported by the chart, such as `repo`, `collaborator`, `teamrepo`, or `workflow`.
+Make sure to replace `<RESOURCE>` to one of the resources supported by the chart, such as `repo`, `collaborator`, `teamrepo`, `workflow` or `runnergroup`, and `<YOUR_NAMESPACE>` with the namespace where you installed the chart.
 
 ## Supported resources
 
@@ -65,7 +67,7 @@ This chart supports the following resources and operations:
 | RunnerGroup     | ✅   | ✅     | ✅     | ✅     |
 
 > [!NOTE]  
-> 🚫 *"Not applicable"* indicates that the operation is not supported because it probably does not make sense for the resource type.  For example, GitHub Workflow runs are typically not updated or deleted directly; they are triggered and if a new run is needed, a new workflow run is created.
+> 🚫 *"Not applicable"* indicates that the operation is not supported by this provider because it probably does not make sense for the resource type.  For example, GitHub Workflow runs are typically not updated or deleted directly; they are triggered and if a new run is needed, a new workflow run is created.
 
 The resources listed above are Custom Resources (CRs) defined in the `github.krateo.io` API group. They are used to manage GitHub resources in a Kubernetes-native way, allowing you to create, update, and delete GitHub resources using Kubernetes manifests.
 
@@ -118,7 +120,8 @@ spec:
 
 #### TeamRepo
 
-The `TeamRepo` resource allows you to manage team access to GitHub repositories. You can specify the `team_slug`, repository name, and permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
+The `TeamRepo` resource allows you to manage team access to GitHub repositories. 
+You can specify the `team_slug`, repository name, and permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
 
 An example of a TeamRepo resource is:
 ```yaml
@@ -141,7 +144,9 @@ spec:
 
 #### Workflow
 
-The `Workflow` resource allows you to trigger workflow runs in a GitHub repository. You can specify the repository name, workflow file name, and any input parameters required by the workflow. 
+The `Workflow` resource allows you to trigger GitHub Actions workflow runs. You can specify the repository name, workflow file name, and any input parameters required by the workflow. 
+You must configure your GitHub Actions workflow to run when the [`workflow_dispatch` webhook](/developers/webhooks-and-events/webhook-events-and-payloads#workflow_dispatch) event occurs. 
+The `inputs` must configured in the workflow file.
 
 An example of a Workflow resource is:
 ```yaml
@@ -188,6 +193,11 @@ spec:
   allows_public_repositories: false
 ```
 
+### Resource examples
+
+You can find example resources for each supported resource type in the `/samples` folder of the chart.
+These examples Custom Resources (CRs) shows every possible field that can be set in the resource.
+
 ## Authentication
 
 The authentication to the GitHub API is managed using 2 resources (both are required):
@@ -196,8 +206,9 @@ The authentication to the GitHub API is managed using 2 resources (both are requ
 
 In order to generate a GitHub token, follow this instructions: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
 
-Example of a Kubernetes Secret:
-```yaml
+Example of a Kubernetes Secret that you can apply to your cluster:
+```sh
+kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Secret
 metadata:
@@ -206,14 +217,16 @@ metadata:
 type: Opaque
 stringData:
   token: <PAT>
+EOF
 ```
 
-Replace `<PAT>` with your actual GitHub Personal Access Token which should look like `ghp_XXXXXXXXXXXXXXXXXXXXXXXX`.
+Replace `<PAT>` with your actual GitHub Personal Access Token.
 
 - **BearerAuth**: This resource references the Kubernetes Secret and is used to authenticate with the GitHub API. It is used in the `authenticationRefs` field of the resources defined in this chart.
 
-Example of a BearerAuth resource:
-```yaml
+Example of a BearerAuth resource that references the Kubernetes Secret, to be applied to your cluster:
+```sh
+kubectl apply -f - <<EOF
 apiVersion: github.krateo.io/v1alpha1
 kind: BearerAuth
 metadata:
@@ -224,6 +237,7 @@ spec:
     key: token
     name: gh-token
     namespace: krateo-system
+EOF
 ```
 
 ## Configuration
@@ -231,7 +245,9 @@ spec:
 ### values.yaml
 
 You can customize the chart by modifying the `values.yaml` file.
-For instance, you can select which resources the provider should support in the oncoming installation by setting the `restdefinitions` field in the `values.yaml` file. The default configuration enables all resources supported by the chart.
+For instance, you can select which resources the provider should support in the oncoming installation by setting the `restdefinitions` field in the `values.yaml` file. 
+This may be useful if you want to limit the resources managed by the provider to only those you need, reducing the overhead of managing unnecessary controllers.
+The default configuration enables all resources supported by the chart.
 
 ### Verbose logging
 
@@ -251,6 +267,10 @@ They also define the operations that can be performed on those resources. Once t
 
 - **/samples** folder: Contains example resources for each supported resource type as seen in this README. These examples demonstrate how to create and manage GitHub resources using the Krateo GitHub Provider.
 
-- **Deployment**: Deploys a [plugin](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin) that is used as a proxy for the GitHub API to resolve some inconsistencies in the OpenAPI Specification. The spacific endpoins managed by the plugin are described in the [plugin README](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin/blob/main/README.md)
+- **Deployment**: Deploys a [plugin](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin) that is used as a proxy for the GitHub API to resolve some inconsistencies in the OpenAPI Specification. The specific endpoins managed by the plugin are described in the [plugin README](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin/blob/main/README.md)
 
 - **Service**: Exposes the plugin described above, allowing the resource controllers to communicate with the GitHub API through the plugin, if needed.
+
+## Troubleshooting
+
+For troubleshooting, you can refer to the [Troubleshooting guide](./docs/troubleshooting.md) in the `/docs` folder of this chart. It contains common issues and solutions related to this chart.
