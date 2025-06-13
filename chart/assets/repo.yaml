@@ -352,7 +352,7 @@ paths:
                   type: boolean
                   description: Either `true` to enable the wiki for this repository
                     or `false` to disable it.
-                  default: true
+                  default: false
                 has_downloads:
                   description: Whether downloads are enabled.
                   default: true
