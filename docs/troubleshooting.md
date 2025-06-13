@@ -87,6 +87,17 @@ When configuring `squash_merge_commit_message` and `squash_merge_commit_title` f
 
 Make sure to avoid any combinations outside of the above to prevent API errors or unexpected behavior.
 
+### Wiki and Private Repositories
+
+When enabling the wiki for a repository (using the `has_wiki: true` field in the Repo CR), you must ensure that the repository is public if your organization does not have a GitHub Pro, GitHub Team, GitHub Enterprise Cloud, or GitHub Enterprise Server plan.
+The `has_wiki` field should be set to `true` only for public repositories unless your organization has the appropriate GitHub plan that allows wikis in private repositories.
+
+[GitHub Docs](https://docs.github.com/en/communities/documenting-your-project-with-wikis/adding-or-editing-wiki-pages) state:
+> Who can use this feature? Wikis are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud and GitHub Enterprise Server. For more information, see GitHub’s plans.
+
+The combination of `has_wiki: true` and the fact that the repo is private will result in an error.
+Wiki will not be enabled and the controller will be constantly see discrepancy between the desired state and the actual state of the repository.
+
 ### Collaborator
 
 When configuring the `permissions` field for collaborators, ensure you're using one of the valid permission levels:
