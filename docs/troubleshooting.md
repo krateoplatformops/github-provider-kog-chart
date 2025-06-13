@@ -1,5 +1,20 @@
 # Troubleshooting
 
+## Summary
+
+- [Summary](#summary)
+- [Checking RestDefinitions](#checking-restdefinitions)
+- [Checking CRDs](#checking-crds)
+- [Checking controllers](#checking-controllers)
+- [Resources](#resources)
+  - [Repo](#repo)
+    - [Squash Merge Commit Message and Title](#squash-merge-commit-message-and-title)
+      - [Valid Combinations](#valid-combinations)
+  - [Collaborator](#collaborator)
+    - [Note on Organization Base Permissions](#note-on-organization-base-permissions)
+  - [Workflow](#workflow)
+    - [Wrong input fields set](#wrong-input-fields-set)
+
 ## Checking RestDefinitions
 
 To check that the `restdefinitions` for the GitHub provider are correctly installed in the Kubernetes cluster, you can run the following command:

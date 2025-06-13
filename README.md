@@ -206,8 +206,9 @@ The authentication to the GitHub API is managed using 2 resources (both are requ
 
 In order to generate a GitHub token, follow this instructions: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
 
-Example of a Kubernetes Secret:
-```yaml
+Example of a Kubernetes Secret that you can apply to your cluster:
+```sh
+kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Secret
 metadata:
@@ -216,14 +217,16 @@ metadata:
 type: Opaque
 stringData:
   token: <PAT>
+EOF
 ```
 
 Replace `<PAT>` with your actual GitHub Personal Access Token.
 
 - **BearerAuth**: This resource references the Kubernetes Secret and is used to authenticate with the GitHub API. It is used in the `authenticationRefs` field of the resources defined in this chart.
 
-Example of a BearerAuth resource:
-```yaml
+Example of a BearerAuth resource that references the Kubernetes Secret, to be applied to your cluster:
+```sh
+kubectl apply -f - <<EOF
 apiVersion: github.krateo.io/v1alpha1
 kind: BearerAuth
 metadata:
@@ -234,6 +237,7 @@ spec:
     key: token
     name: gh-token
     namespace: krateo-system
+EOF
 ```
 
 ## Configuration
