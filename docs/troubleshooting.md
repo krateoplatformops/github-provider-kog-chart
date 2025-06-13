@@ -38,7 +38,7 @@ teamrepoes.github.krateo.io                     2025-06-12T16:24:23Z
 workflows.github.krateo.io                      2025-06-12T16:24:24Z
 ```
 
-Note: if you confifure to install just a subset of `restdefinitions`, you may not see all of the above CRDs.
+Note: if you configure to install just a subset of `restdefinitions`, you may not see all of the above CRDs.
 
 ## Checking controllers
 
