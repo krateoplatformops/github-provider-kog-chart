@@ -218,7 +218,7 @@ stringData:
   token: <PAT>
 ```
 
-Replace `<PAT>` with your actual GitHub Personal Access Token which should look like `ghp_XXXXXXXXXXXXXXXXXXXXXXXX`.
+Replace `<PAT>` with your actual GitHub Personal Access Token.
 
 - **BearerAuth**: This resource references the Kubernetes Secret and is used to authenticate with the GitHub API. It is used in the `authenticationRefs` field of the resources defined in this chart.
 
