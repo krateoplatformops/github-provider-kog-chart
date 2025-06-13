@@ -1,12 +1,67 @@
 # Troubleshooting
 
-## Repo
+## Checking RestDefinitions
 
-### Squash Merge Commit Message and Title
+To check that the `restdefinitions` for the GitHub provider are correctly installed in the Kubernetes cluster, you can run the following command:
+```sh
+kubectl get restdefinition -n <YOUR_NAMESPACE>
+```
+
+You should see output similar to this:
+```sh
+NAME               READY
+ghp-collaborator   True
+ghp-repo           True
+ghp-runnergroup    True
+ghp-teamrepo       True
+ghp-workflow       True
+```
+
+Note: if you confifure to install just a subset of `restdefinitions`, you may not see all of the above `restdefinitions`.
+
+Note: the prefix `ghp-` came from the Helm release name and therefore may differ in your case.
+
+## Checking CRDs
+
+To check that the Custom Resource Definitions (CRDs) for the GitHub provider are installed in the Kubernetes cluster, you can run the following command:
+```sh
+kubectl get crds | grep github
+```
+
+If the CRDs are installed, you should see output similar to this:
+```sh
+bearerauths.github.krateo.io                    2025-06-12T16:24:23Z
+collaborators.github.krateo.io                  2025-06-12T16:24:23Z
+repoes.github.krateo.io                         2025-06-12T16:24:23Z
+runnergroups.github.krateo.io                   2025-06-12T16:24:24Z
+teamrepoes.github.krateo.io                     2025-06-12T16:24:23Z
+workflows.github.krateo.io                      2025-06-12T16:24:24Z
+```
+
+Note: if you confifure to install just a subset of `restdefinitions`, you may not see all of the above CRDs.
+
+## Checking controllers
+
+You can check the status of the controllers by running:
+```sh
+until kubectl get deployment github-provider-<RESOURCE>-controller -n <YOUR_NAMESPACE> &>/dev/null; do
+  echo "Waiting for <RESOURCE> controller deployment to be created..."
+  sleep 5
+done
+kubectl wait deployments github-provider-<RESOURCE>-controller --for condition=Available=True --namespace <YOUR_NAMESPACE> --timeout=300s
+```
+
+Make sure to replace `<RESOURCE>` to one of the resources supported by the chart, such as `repo`, `collaborator`, `teamrepo`, `workflow` or `runnergroup`, and `<YOUR_NAMESPACE>` with the namespace where you installed the chart.
+
+## Resources
+
+### Repo
+
+#### Squash Merge Commit Message and Title
 
 When configuring `squash_merge_commit_message` and `squash_merge_commit_title` fields, you must use a valid combination according to the [GitHub API documentation](https://docs.github.com/rest/repos/repos#create-an-organization-repository).
 
-#### Valid Combinations
+##### Valid Combinations
 
 | `squash_merge_commit_title` | `squash_merge_commit_message` |
 |-----------------------------|-------------------------------|
@@ -17,7 +72,7 @@ When configuring `squash_merge_commit_message` and `squash_merge_commit_title` f
 
 Make sure to avoid any combinations outside of the above to prevent API errors or unexpected behavior.
 
-## Collaborator
+### Collaborator
 
 When configuring the `permissions` field for collaborators, ensure you're using one of the valid permission levels:
 
@@ -29,7 +84,7 @@ When configuring the `permissions` field for collaborators, ensure you're using 
 | `triage`                |
 | `pull`                  |
 
-### Note on Organization Base Permissions
+#### Note on Organization Base Permissions
 
 If the organization's "Base permissions" are set to `read`, and you attempt to add a collaborator to a repository with `pull` permissions **as the initial permission**, the collaborator may **not** appear in the repository's collaborators list.
 Practically this is just a visual choice of the GitHub UI, as the collaborator does have `pull` access to the repository.
@@ -38,10 +93,9 @@ However, if you first add the collaborator with a higher permission level (e.g.,
 
 This behavior is related to how GitHub handles permission inheritance from organization-level settings.
 
+### Workflow
 
-## Workflow
-
-### Wrong input fields set
+#### Wrong input fields set
 
 In your workflow file, you are able to set arbitrary input fields, like:
 ```yaml
@@ -86,7 +140,6 @@ jobs:
 ```
 
 If in the Workflow CR you set the `inputs` field to something like this:
-
 ```yaml
 spec:
   authenticationRefs:
@@ -104,7 +157,6 @@ spec:
 ```
 
 The workflow will not be triggered at all and you will receive an error like this when trying to dispatch the workflow:
-
 ```json
 {
   "message": "Unexpected inputs provided: [\"field_not_in_workflow\"]",
