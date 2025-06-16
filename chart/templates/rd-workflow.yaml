@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-workflow
 spec:
   oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-workflow/workflow.yaml
-  resourceGroup: github.krateo.io
+  resourceGroup: github.kog.krateo.io
   resource: 
     kind: Workflow
     verbsDescription:

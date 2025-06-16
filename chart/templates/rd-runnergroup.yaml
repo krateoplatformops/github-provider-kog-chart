@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-runnergroup
 spec:
   oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-runnergroup/runnergroup.yaml
-  resourceGroup: github.krateo.io
+  resourceGroup: github.kog.krateo.io
   resource:
     kind: RunnerGroup
     identifiers:
