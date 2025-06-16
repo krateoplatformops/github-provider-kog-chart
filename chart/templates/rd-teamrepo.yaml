@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-teamrepo
 spec:
   oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-teamrepo/teamrepo.yaml
-  resourceGroup: github.krateo.io
+  resourceGroup: github.kog.krateo.io
   resource: 
     kind: TeamRepo
     identifiers:

@@ -1,4 +1,4 @@
-apiVersion: github.krateo.io/v1alpha1
+apiVersion: github.kog.krateo.io/v1alpha1
 kind: Collaborator
 metadata:
   name: add-collaborator
