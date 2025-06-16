@@ -10,6 +10,8 @@
   - [Repo](#repo)
     - [Squash Merge Commit Message and Title](#squash-merge-commit-message-and-title)
       - [Valid Combinations](#valid-combinations)
+    - [Wiki and Private Repositories](#wiki-and-private-repositories)
+    - [`private` and `visibility` fields](#private-and-visibility-fields)
   - [Collaborator](#collaborator)
     - [Note on Organization Base Permissions](#note-on-organization-base-permissions)
   - [Workflow](#workflow)
@@ -45,12 +47,12 @@ kubectl get crds | grep github
 
 If the CRDs are installed, you should see output similar to this:
 ```sh
-bearerauths.github.krateo.io                    2025-06-12T16:24:23Z
-collaborators.github.krateo.io                  2025-06-12T16:24:23Z
-repoes.github.krateo.io                         2025-06-12T16:24:23Z
-runnergroups.github.krateo.io                   2025-06-12T16:24:24Z
-teamrepoes.github.krateo.io                     2025-06-12T16:24:23Z
-workflows.github.krateo.io                      2025-06-12T16:24:24Z
+bearerauths.github.kog.krateo.io                    2025-06-12T16:24:23Z
+collaborators.github.kog.krateo.io                  2025-06-12T16:24:23Z
+repoes.github.kog.krateo.io                         2025-06-12T16:24:23Z
+runnergroups.github.kog.krateo.io                   2025-06-12T16:24:24Z
+teamrepoes.github.kog.krateo.io                     2025-06-12T16:24:23Z
+workflows.github.kog.krateo.io                      2025-06-12T16:24:24Z
 ```
 
 Note: if you configure to install just a subset of `restdefinitions`, you may not see all of the above CRDs.
@@ -87,7 +89,7 @@ When configuring `squash_merge_commit_message` and `squash_merge_commit_title` f
 
 Make sure to avoid any combinations outside of the above to prevent API errors or unexpected behavior.
 
-##### Wiki and Private Repositories
+#### Wiki and Private Repositories
 
 When enabling the wiki for a repository (using the `has_wiki: true` field in the Repo CR), you must ensure that the repository is public if your organization does not have a GitHub Pro, GitHub Team, GitHub Enterprise Cloud, or GitHub Enterprise Server plan.
 The `has_wiki` field should be set to `true` only for public repositories unless your organization has the appropriate GitHub plan that allows wikis in private repositories.
@@ -98,7 +100,7 @@ The `has_wiki` field should be set to `true` only for public repositories unless
 The combination of `has_wiki: true` and the fact that the repo is private will result in an error.
 Wiki will not be enabled and the controller will be constantly see discrepancy between the desired state and the actual state of the repository.
 
-##### `private` and `visibility` fields
+#### `private` and `visibility` fields
 
 When setting the `private` and `visibility` fields in the Repo CR, you must ensure that they are consistent with each other.
 The `private` field is a boolean that indicates whether the repository is private or not, while the `visibility` field is a string that can be set to either `public`, `private`.
@@ -118,10 +120,11 @@ When configuring the `permissions` field for collaborators, ensure you're using 
 
 #### Note on Organization Base Permissions
 
-If the organization's "Base permissions" are set to `read`, and you attempt to add a collaborator to a repository with `pull` permissions **as the initial permission**, the collaborator may **not** appear in the repository's collaborators list.
+If the organization's "Base permissions" are set to `read`, and you attempt to add a collaborator (who is already a member of the organization) to a repository with `pull` permissions **as the initial permission**, the collaborator may **not** appear in the repository's collaborators list.
 Practically this is just a visual choice of the GitHub UI, as the collaborator does have `pull` access to the repository.
+Instead, an external collaborator with `pull` permissions will still be visible in the list with the `Pending Invite` label.
 
-However, if you first add the collaborator with a higher permission level (e.g., `push`), and then downgrade the permission to `pull`, the collaborator **will** be visible in the list.
+On the other hand, if you first add the collaborator with a higher permission level (e.g., `push`), and then downgrade the permission to `pull`, the collaborator **will** be visible in the list in the GitHub UI.
 
 This behavior is related to how GitHub handles permission inheritance from organization-level settings.
 
