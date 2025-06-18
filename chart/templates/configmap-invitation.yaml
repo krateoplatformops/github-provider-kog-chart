@@ -1,0 +1,10 @@
+{{- if .Values.restdefinitions.invitations.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-invitation
+data:
+  invitation.yaml: |
+{{ tpl (.Files.Get "assets/invitation.yaml") . | indent 4 }}
+{{ end }}
+  
