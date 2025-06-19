@@ -1,28 +1,28 @@
-{{- if .Values.restdefinitions.collaborator.enabled }}
+{{- if .Values.restdefinitions.invitation.enabled }}
 kind: RestDefinition
 apiVersion: swaggergen.krateo.io/v1alpha1
 metadata:
-  name: {{ .Release.Name }}-collaborator
+  name: {{ .Release.Name }}-invitation
 spec:
   oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-invitation/invitation.yaml
   resourceGroup: github.kog.krateo.io
   resource: 
-    kind: Collaborator
+    kind: Invitation
     identifiers:
-      - id
+      - id            #invitation_id
       - permissions
-      - html_url
+      - username
     verbsDescription:
     - action: create
       method: PUT
       path: /repos/{owner}/{repo}/collaborators/{username}
     - action: delete
       method: DELETE
-      path: /repos/{owner}/{repo}/collaborators/{username}
-    - action: get
+      path: /repos/{owner}/{repo}/invitations/{id}
+    - action: findby
       method: GET
-      path: /repository/{owner}/{repo}/collaborators/{username}/permission
+      path: /repos/{owner}/{repo}/invitations
     - action: update
-      method: PUT
-      path: /repos/{owner}/{repo}/collaborators/{username}
+      method: PATCH
+      path: /repos/{owner}/{repo}/invitations/{id}
 {{ end }}

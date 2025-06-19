@@ -117,12 +117,14 @@ env: []
 
 restdefinitions:
   collaborator:
+    enabled: false
+  invitation:
     enabled: true
   repo:
-    enabled: true
+    enabled: false
   teamrepo:
-    enabled: true
+    enabled: false
   workflow:
-    enabled: true
+    enabled: false
   runnergroup:
-    enabled: true
+    enabled: false

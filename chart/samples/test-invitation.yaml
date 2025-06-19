@@ -1,0 +1,14 @@
+apiVersion: github.kog.krateo.io/v1alpha1
+kind: Invitation
+metadata:
+  name: test-invitation
+  namespace: ghp
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  authenticationRefs:
+    bearerAuthRef: bearer-gh-ref
+  owner: krateoplatformops-test
+  repo: test-collaborator
+  username: octocat
+  permission: push

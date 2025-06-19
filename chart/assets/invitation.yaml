@@ -18,6 +18,80 @@ externalDocs:
   description: GitHub v3 REST API
   url: https://docs.github.com/rest/
 paths:
+  "/repos/{owner}/{repo}/collaborators/{username}":
+    put:
+      summary: Add a repository collaborator
+      description: |-
+        This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
+
+        Adding an outside collaborator may be restricted by enterprise administrators. For more information, see "[Enforcing repository management policies in your enterprise](https://docs.github.com/admin/policies/enforcing-policies-for-your-enterprise/enforcing-repository-management-policies-in-your-enterprise#enforcing-a-policy-for-inviting-outside-collaborators-to-repositories)."
+
+        For more information on permission levels, see "[Repository permission levels for an organization](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)". There are restrictions on which permissions can be granted to organization members when an organization base role is in place. In this case, the permission being given must be equal to or higher than the org base permission. Otherwise, the request will fail with:
+
+        ```
+        Cannot assign {member} permission of {role name}
+        ```
+
+        Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
+
+        The invitee will receive a notification that they have been invited to the repository, which they must accept or decline. They may do this via the notifications page, the email they receive, or by using the [API](https://docs.github.com/rest/collaborators/invitations).
+
+        **Updating an existing collaborator's permission level**
+
+        The endpoint can also be used to change the permissions of an existing collaborator without first removing and re-adding the collaborator. To change the permissions, use the same endpoint and pass a different `permission` parameter. The response will be a `204`, with no other indication that the permission level changed.
+
+        **Rate limits**
+
+        You are limited to sending 50 invitations to a repository per 24 hour period. Note there is no limit if you are inviting organization members to an organization repository.
+      tags:
+      - repos
+      operationId: repos/add-collaborator
+      externalDocs:
+        description: API method documentation
+        url: https://docs.github.com/rest/collaborators/collaborators#add-a-repository-collaborator
+      parameters:
+      - "$ref": "#/components/parameters/owner"
+      - "$ref": "#/components/parameters/repo"
+      - "$ref": "#/components/parameters/username"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permission:
+                  type: string
+                  description: 'The permission to grant the collaborator. **Only valid
+                    on organization-owned repositories.** We accept the following
+                    permissions to be set: `pull`, `triage`, `push`, `maintain`, `admin`
+                    and you can also specify a custom repository role name, if the
+                    owning organization has defined any.'
+                  default: push
+            examples:
+              new-invitation-is-created:
+                summary: Add a collaborator with triage permissions
+                value:
+                  permission: triage
+      responses:
+        '201':
+          description: Response when a new invitation is created
+          content:
+            application/json:
+              schema:
+                type: object
+        '204':
+          description: |-
+            Response when:
+            - an existing collaborator is added as a collaborator
+            - an organization member is added as an individual collaborator
+            - an existing team member (whose team is also a repository collaborator) is added as an individual collaborator
+      x-github:
+        triggersNotification: true
+        githubCloudOnly: false
+        enabledForGitHubApps: true
+        category: collaborators
+        subcategory: collaborators
   "/repos/{owner}/{repo}/invitations":
     get:
       summary: List repository invitations
@@ -43,18 +117,18 @@ paths:
                 type: array
                 items:
                   "$ref": "#/components/schemas/repository-invitation"
-              examples:
-                default:
-                  "$ref": "#/components/examples/repository-invitation-items"
-          headers:
-            Link:
-              "$ref": "#/components/headers/link"
+              #examples:
+              #  default:
+              #    "$ref": "#/components/examples/repository-invitation-items"
+          #headers:
+          #  Link:
+          #    "$ref": "#/components/headers/link"
       x-github:
         githubCloudOnly: false
         enabledForGitHubApps: true
         category: collaborators
         subcategory: invitations
-  "/repos/{owner}/{repo}/invitations/{invitation_id}":
+  "/repos/{owner}/{repo}/invitations/{id}":
     patch:
       summary: Update a repository invitation
       description: ''
@@ -98,9 +172,9 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/repository-invitation"
-              examples:
-                default:
-                  "$ref": "#/components/examples/repository-invitation"
+              #examples:
+              #  default:
+              #    "$ref": "#/components/examples/repository-invitation"
       x-github:
         githubCloudOnly: false
         enabledForGitHubApps: true
@@ -127,8 +201,20 @@ paths:
         enabledForGitHubApps: true
         category: collaborators
         subcategory: invitations
+
 components:
+  securitySchemes:
+    accessToken:
+      type: http
+      scheme: bearer
   parameters:
+    username:
+      name: username
+      description: The handle for the GitHub user account.
+      in: path
+      required: true
+      schema:
+        type: string
     owner:
       name: owner
       in: path
@@ -144,7 +230,7 @@ components:
       schema:
         type: string
     invitation-id:
-      name: invitation_id
+      name: id # changed from 'invitation-id' to 'id' for consistency with the API response
       in: path
       required: true
       description: The unique identifier of the repository invitation.
@@ -164,6 +250,58 @@ components:
       schema:
         type: integer
   schemas:
-    
+    repository-invitation:
+      title: Repository Invitation
+      description: Repository invitations let you manage who you collaborate with.
+      type: object
+      properties:
+        id:
+          description: Unique identifier of the repository invitation.
+          example: 42
+          type: integer
+          format: int64
+        repository:
+        #  "$ref": "#/components/schemas/minimal-repository"
+          type: object
+        invitee:
+        #  "$ref": "#/components/schemas/nullable-simple-user"
+          type: object
+        inviter:
+        #  "$ref": "#/components/schemas/nullable-simple-user"
+        permissions: # INCONSISTENT
+          description: The permission associated with the invitation.
+          example: read
+          type: string
+          enum:
+          - read
+          - write
+          - admin
+          - triage
+          - maintain
+        created_at:
+          type: string
+          format: date-time
+          example: '2016-06-13T14:52:50-05:00'
+        expired:
+          description: Whether or not the invitation has expired
+          type: boolean
+        url:
+          description: URL for the repository invitation
+          example: https://api.github.com/user/repository-invitations/1
+          type: string
+        html_url:
+          type: string
+          example: https://github.com/octocat/Hello-World/invitations
+        node_id:
+          type: string
+      required:
+      - id
+      - node_id
+      - permissions
+      - inviter
+      - invitee
+      - repository
+      - url
+      - html_url
+      - created_at
 
-  examples:
