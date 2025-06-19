@@ -180,6 +180,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Perms'
+        '202':
+          description: Pending invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perms'
   "/":
     get:
       summary: GitHub API Root
@@ -300,6 +306,12 @@ components:
           type: string
         user:
           $ref: '#/components/schemas/User'
+        is_invitation_pending:
+          type: boolean
+          description: Indicates if the user has a pending invitation to become a collaborator
+        message:
+          type: string
+          description: A message indicating the status of the collaborator
     root:
       type: object
       properties:

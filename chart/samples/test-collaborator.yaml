@@ -10,5 +10,5 @@ spec:
     bearerAuthRef: bearer-gh-ref
   owner: krateoplatformops-test
   repo: test-collaborator
-  username: FrancescoL96
+  username: leonardo-vicentini
   permission: push

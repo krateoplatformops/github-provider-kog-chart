@@ -12,6 +12,8 @@ spec:
       - id
       - permissions
       - html_url
+      - message
+      - is_invitation_pending
     verbsDescription:
     - action: create
       method: PUT
