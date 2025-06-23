@@ -13,18 +13,17 @@ spec:
       - permissions
       - html_url
       - message
-      - is_invitation_pending
     verbsDescription:
     - action: create
-      method: PUT
-      path: /repos/{owner}/{repo}/collaborators/{username}
+      method: POST
+      path: /repository/{owner}/{repo}/collaborators/{username}
     - action: delete
       method: DELETE
-      path: /repos/{owner}/{repo}/collaborators/{username}
+      path: /repository/{owner}/{repo}/collaborators/{username}
     - action: get
       method: GET
       path: /repository/{owner}/{repo}/collaborators/{username}/permission
     - action: update
-      method: PUT
-      path: /repos/{owner}/{repo}/collaborators/{username}
+      method: PATCH
+      path: /repository/{owner}/{repo}/collaborators/{username}
 {{ end }}
