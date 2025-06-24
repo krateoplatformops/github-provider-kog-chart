@@ -98,7 +98,15 @@ spec:
 
 #### Collaborator 
 
-The `Collaborator` resource allows you to add or remove collaborators from a GitHub repository. You can specify the username of the collaborator and the permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
+The `Collaborator` resource allows you to add and remove collaborators from a GitHub repository. 
+You can specify the username of the collaborator and the permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
+Updating a collaborator's permission level is also supported.
+In addition, this resource supports adding "external collaborators" to a repository, meaning users who are not members of the organization that owns the repository.
+In this case, an invitation will be sent to the user with the specified permission level.
+Updating and deleting invitations is supported through the same resource.
+You can verify whether the user is directly added as a collaborator or if the invitation is pending by checking the `message` field in the Collaborator resource status.
+Note that the Collaborator resource will remain in a `Pending` state until the user accepts the invitation.
+
 
 An example of a Collaborator resource is:
 ```yaml
@@ -144,7 +152,8 @@ spec:
 
 #### Workflow
 
-The `Workflow` resource allows you to trigger GitHub Actions workflow runs. You can specify the repository name, workflow file name, and any input parameters required by the workflow. 
+The `Workflow` resource allows you to trigger GitHub Actions workflow runs (`workflow_dispatch`). 
+You can specify the repository name, workflow file name, and any input parameters required by the workflow. 
 You must configure your GitHub Actions workflow to run when the [`workflow_dispatch` webhook](/developers/webhooks-and-events/webhook-events-and-payloads#workflow_dispatch) event occurs. 
 The `inputs` must configured in the workflow file.
 

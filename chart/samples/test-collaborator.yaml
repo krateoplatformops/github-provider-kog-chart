@@ -1,7 +1,7 @@
 apiVersion: github.kog.krateo.io/v1alpha1
 kind: Collaborator
 metadata:
-  name: add-collaborator
+  name: test-collaborator
   namespace: ghp
   annotations:
     krateo.io/connector-verbose: "true"
@@ -9,6 +9,6 @@ spec:
   authenticationRefs:
     bearerAuthRef: bearer-gh-ref
   owner: krateoplatformops-test
-  repo: test-collaborator
-  username: FrancescoL96
+  repo: collaborator-tester
+  username: leonardo-vicentini
   permission: push
