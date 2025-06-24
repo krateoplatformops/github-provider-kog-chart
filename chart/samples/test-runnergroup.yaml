@@ -21,4 +21,4 @@ spec:
   #selected_workflows:  # List of workflows the runner group should be allowed to run, ignored unless `restricted_to_workflows` is set to `true`.
   #  - workflow-test-1
   #  - workflow-test-2
-  visibility: private # Visibility of the runner group by repositories. You can select all. private or selected repositories (`all`, `private`, or `selected`).
+  #visibility: all # Visibility of the runner group by repositories. You can select all. private or selected repositories (`all`, `private`, or `selected`).
