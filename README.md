@@ -1,6 +1,6 @@
 # GitHub Provider Helm Chart
 
-This is a [Helm Chart](https://helm.sh/docs/topics/charts/) that deploys the Krateo GitHub Provider leveraging the [Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider) and using [OpenAPI Specifications (OAS) of the GitHub API](https://github.com/github/rest-api-description/blob/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml).
+This is a [Helm Chart](https://helm.sh/docs/topics/charts/) that deploys the Krateo GitHub Provider leveraging the [Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider) and using [OpenAPI Specifications (OAS) of the GitHub REST API](https://github.com/github/rest-api-description/blob/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml).
 This provider allows you to manage GitHub resources such as repositories, collaborators, and workflow runs using the Krateo platform.
 
 > [!NOTE]  
@@ -63,7 +63,7 @@ This chart supports the following resources and operations:
 | Collaborator | ✅   | ✅     | ✅     | ✅     |
 | Repo         | ✅   | ✅     | ✅     | ✅     |
 | TeamRepo     | ✅   | ✅     | ✅     | ✅     |
-| Workflow     | ✅   | ✅     | 🚫 Not applicable    | 🚫 Not applicable     |
+| Workflow     | 🚫 Not applicable   | ✅     | 🚫 Not applicable    | 🚫 Not applicable     |
 | RunnerGroup     | ✅   | ✅     | ✅     | ✅     |
 
 > [!NOTE]  
@@ -75,14 +75,15 @@ The resources listed above are Custom Resources (CRs) defined in the `github.kra
 
 #### Repo
 
-The `Repo` resource allows you to create, update, and delete GitHub repositories. You can specify the repository name, description, visibility (public or private), and other settings that can be seen in the [GitHub API documentation](https://docs.github.com/en/rest/repos?apiVersion=2022-11-28) and the selected OpenAPI Specification in the `/assets` folder of this chart.
+The `Repo` resource allows you to create, update, and delete GitHub repositories. 
+You can specify the repository name, description, visibility (public or private), and other settings that can be seen in the [GitHub REST API documentation](https://docs.github.com/en/rest/repos?apiVersion=2022-11-28) and the selected OpenAPI Specification in the `/assets` folder of this chart.
 
 An example of a Repo resource is:
 ```yaml
-apiVersion: github.krateo.io/v1alpha1
+apiVersion: github.kog.krateo.io/v1alpha1
 kind: Repo
 metadata:
-  name: test-repo1
+  name: test-repo
   namespace: ghp
   annotations:
     krateo.io/connector-verbose: "true"
@@ -90,7 +91,7 @@ spec:
   authenticationRefs:
     bearerAuthRef: bearer-gh-ref
   org: krateoplatformops-test
-  name: test-repo1
+  name: test-repo
   description: A short description of the repository set by Krateo
   visibility: public
   has_issues: true
@@ -101,6 +102,7 @@ spec:
 The `Collaborator` resource allows you to add and remove collaborators from a GitHub repository. 
 You can specify the username of the collaborator and the permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
 Updating a collaborator's permission level is also supported.
+
 In addition, this resource supports adding "external collaborators" to a repository, meaning users who are not members of the organization that owns the repository.
 In this case, an invitation will be sent to the user with the specified permission level.
 Updating and deleting invitations is supported through the same resource.
@@ -110,7 +112,7 @@ Note that the Collaborator resource will remain in a `Pending` state until the u
 
 An example of a Collaborator resource is:
 ```yaml
-apiVersion: github.krateo.io/v1alpha1
+apiVersion: github.kog.krateo.io/v1alpha1
 kind: Collaborator
 metadata:
   name: add-collaborator
@@ -133,7 +135,7 @@ You can specify the `team_slug`, repository name, and permission level among `ad
 
 An example of a TeamRepo resource is:
 ```yaml
-apiVersion: github.krateo.io/v1alpha1
+apiVersion: github.kog.krateo.io/v1alpha1
 kind: TeamRepo
 metadata:
   name: test-teamrepo
@@ -156,10 +158,11 @@ The `Workflow` resource allows you to trigger GitHub Actions workflow runs (`wor
 You can specify the repository name, workflow file name, and any input parameters required by the workflow. 
 You must configure your GitHub Actions workflow to run when the [`workflow_dispatch` webhook](/developers/webhooks-and-events/webhook-events-and-payloads#workflow_dispatch) event occurs. 
 The `inputs` must configured in the workflow file.
+Please refer to the [GitHub REST API documentation](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#create-a-workflow-dispatch-event) for more information.
 
 An example of a Workflow resource is:
 ```yaml
-apiVersion: github.krateo.io/v1alpha1
+apiVersion: github.kog.krateo.io/v1alpha1
 kind: Workflow
 metadata:
   name: workflow-tester
@@ -186,7 +189,7 @@ The `RunnerGroup` resource allows you to manage GitHub runner groups. You can sp
 
 An example of a RunnerGroup resource is:
 ```yaml
-apiVersion: github.krateo.io/v1alpha1
+apiVersion: github.kog.krateo.io/v1alpha1
 kind: RunnerGroup
 metadata:
   name: runnergroup-test
@@ -198,20 +201,19 @@ spec:
     bearerAuthRef: bearer-gh-ref
   name: runner-test-by-krateo
   org: krateoplatformops-test
-  visibility: private
   allows_public_repositories: false
 ```
 
 ### Resource examples
 
 You can find example resources for each supported resource type in the `/samples` folder of the chart.
-These examples Custom Resources (CRs) shows every possible field that can be set in the resource.
+These examples Custom Resources (CRs) show every possible field that can be set in the resource based reflected on the Custom Resource Definitions (CRDs) that are generated and installed in the cluster.
 
 ## Authentication
 
-The authentication to the GitHub API is managed using 2 resources (both are required):
+The authentication to the GitHub REST API is managed using 2 resources (both are required):
 
-- **Kubernetes Secret**: This resource is used to store the GitHub Personal Access Token (PAT) that is used to authenticate with the GitHub API. The PAT should have the necessary permissions to manage the resources you want to create or update.
+- **Kubernetes Secret**: This resource is used to store the GitHub Personal Access Token (PAT) that is used to authenticate with the GitHub REST API. The PAT should have the necessary permissions to manage the resources you want to create or update.
 
 In order to generate a GitHub token, follow this instructions: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
 
@@ -231,12 +233,12 @@ EOF
 
 Replace `<PAT>` with your actual GitHub Personal Access Token.
 
-- **BearerAuth**: This resource references the Kubernetes Secret and is used to authenticate with the GitHub API. It is used in the `authenticationRefs` field of the resources defined in this chart.
+- **BearerAuth**: This resource references the Kubernetes Secret and is used to authenticate with the GitHub REST API. It is used in the `authenticationRefs` field of the resources defined in this chart.
 
 Example of a BearerAuth resource that references the Kubernetes Secret, to be applied to your cluster:
 ```sh
 kubectl apply -f - <<EOF
-apiVersion: github.krateo.io/v1alpha1
+apiVersion: github.kog.krateo.io/v1alpha1
 kind: BearerAuth
 metadata:
   name: bearer-gh-ref
@@ -261,7 +263,7 @@ The default configuration enables all resources supported by the chart.
 ### Verbose logging
 
 In order to enable verbose logging for the controllers, you can add the `krateo.io/connector-verbose: "true"` annotation to the metadata of the resources you want to manage, as shown in the examples above. 
-This will enable verbose logging for those specific resources, which can be useful for debugging and troubleshooting.
+This will enable verbose logging for those specific resources, which can be useful for debugging and troubleshooting as it will provide more detailed information about the operations performed by the controllers.
 
 ## Chart structure
 
@@ -272,14 +274,15 @@ They also define the operations that can be performed on those resources. Once t
 
 - **ConfigMaps**: Refer directly to the OpenAPI Specification content in the `/assets` folder.
 
-- **/assets** folder: Contains the selected OpenAPI Specification files for the GitHub API.
+- **/assets** folder: Contains the selected OpenAPI Specification files for the GitHub REST API.
 
 - **/samples** folder: Contains example resources for each supported resource type as seen in this README. These examples demonstrate how to create and manage GitHub resources using the Krateo GitHub Provider.
 
-- **Deployment**: Deploys a [plugin](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin) that is used as a proxy for the GitHub API to resolve some inconsistencies in the OpenAPI Specification. The specific endpoins managed by the plugin are described in the [plugin README](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin/blob/main/README.md)
+- **Deployment**: Deploys a [plugin](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin) that is used as a proxy to resolve some inconsistencies of the GitHub REST API. The specific endpoins managed by the plugin are described in the [plugin README](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin/blob/main/README.md)
 
-- **Service**: Exposes the plugin described above, allowing the resource controllers to communicate with the GitHub API through the plugin, if needed.
+- **Service**: Exposes the plugin described above, allowing the resource controllers to communicate with the GitHub REST API through the plugin, only if needed.
 
 ## Troubleshooting
 
-For troubleshooting, you can refer to the [Troubleshooting guide](./docs/troubleshooting.md) in the `/docs` folder of this chart. It contains common issues and solutions related to this chart.
+For troubleshooting, you can refer to the [Troubleshooting guide](./docs/troubleshooting.md) in the `/docs` folder of this chart. 
+It contains common issues and solutions related to this chart.
