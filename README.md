@@ -156,7 +156,7 @@ spec:
 
 The `Workflow` resource allows you to trigger GitHub Actions workflow runs (`workflow_dispatch`). 
 You can specify the repository name, workflow file name, and any input parameters required by the workflow. 
-You must configure your GitHub Actions workflow to run when the [`workflow_dispatch` webhook](/developers/webhooks-and-events/webhook-events-and-payloads#workflow_dispatch) event occurs. 
+You must configure your GitHub Actions workflow to run when the [`workflow_dispatch` webhook](https://docs.github.com/en/webhooks/webhook-events-and-payloads#workflow_dispatch) event occurs. 
 The `inputs` must configured in the workflow file.
 Please refer to the [GitHub REST API documentation](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#create-a-workflow-dispatch-event) for more information.
 
