@@ -12,6 +12,7 @@ spec:
       - id 
       - name
       - full_name
+    additionalStatusFields:
       - permission
     verbsDescription:
     - action: create

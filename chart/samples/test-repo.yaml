@@ -1,13 +1,14 @@
 apiVersion: github.kog.krateo.io/v1alpha1
 kind: Repo
 metadata:
-  name: test-repo
-  namespace: ghp
+  name: test-repo1908
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-repo-config
+    namespace: default 
   org: krateoplatformops-test
   allow_auto_merge : false
   allow_merge_commit: true

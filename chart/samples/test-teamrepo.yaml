@@ -2,12 +2,13 @@ apiVersion: github.kog.krateo.io/v1alpha1
 kind: TeamRepo
 metadata:
   name: test-teamrepo
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-teamrepo-config
+    namespace: default
   org: krateoplatformops-test
   owner: krateoplatformops-test
   team_slug: test-team

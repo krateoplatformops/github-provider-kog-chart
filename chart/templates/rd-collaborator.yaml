@@ -10,8 +10,9 @@ spec:
     kind: Collaborator
     identifiers:
       - id
-      - permissions
       - html_url
+    additionalStatusFields:
+      - permissions
       - message
     verbsDescription:
     - action: create
