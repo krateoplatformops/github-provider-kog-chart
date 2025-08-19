@@ -80,7 +80,7 @@ You can specify the repository name, description, visibility (public or private)
 
 An example of a Repo resource is:
 ```yaml
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Repo
 metadata:
   name: test-repo
@@ -112,7 +112,7 @@ Note that the Collaborator resource will remain in a `Pending` state until the u
 
 An example of a Collaborator resource is:
 ```yaml
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Collaborator
 metadata:
   name: add-collaborator
@@ -135,7 +135,7 @@ You can specify the `team_slug`, repository name, and permission level among `ad
 
 An example of a TeamRepo resource is:
 ```yaml
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: TeamRepo
 metadata:
   name: test-teamrepo
@@ -162,7 +162,7 @@ Please refer to the [GitHub REST API documentation](https://docs.github.com/en/r
 
 An example of a Workflow resource is:
 ```yaml
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Workflow
 metadata:
   name: workflow-tester
@@ -189,7 +189,7 @@ The `RunnerGroup` resource allows you to manage GitHub runner groups. You can sp
 
 An example of a RunnerGroup resource is:
 ```yaml
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: RunnerGroup
 metadata:
   name: runnergroup-test
@@ -238,7 +238,7 @@ Replace `<PAT>` with your actual GitHub Personal Access Token.
 Example of a BearerAuth resource that references the Kubernetes Secret, to be applied to your cluster:
 ```sh
 kubectl apply -f - <<EOF
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: BearerAuth
 metadata:
   name: bearer-gh-ref

@@ -47,12 +47,12 @@ kubectl get crds | grep github
 
 If the CRDs are installed, you should see output similar to this:
 ```sh
-bearerauths.github.kog.krateo.io                    2025-06-12T16:24:23Z
-collaborators.github.kog.krateo.io                  2025-06-12T16:24:23Z
-repoes.github.kog.krateo.io                         2025-06-12T16:24:23Z
-runnergroups.github.kog.krateo.io                   2025-06-12T16:24:24Z
-teamrepoes.github.kog.krateo.io                     2025-06-12T16:24:23Z
-workflows.github.kog.krateo.io                      2025-06-12T16:24:24Z
+bearerauths.github.ogen.krateo.io                    2025-06-12T16:24:23Z
+collaborators.github.ogen.krateo.io                  2025-06-12T16:24:23Z
+repoes.github.ogen.krateo.io                         2025-06-12T16:24:23Z
+runnergroups.github.ogen.krateo.io                   2025-06-12T16:24:24Z
+teamrepoes.github.ogen.krateo.io                     2025-06-12T16:24:23Z
+workflows.github.ogen.krateo.io                      2025-06-12T16:24:24Z
 ```
 
 Note: if you configure to install just a subset of `restdefinitions`, you may not see all of the above CRDs.

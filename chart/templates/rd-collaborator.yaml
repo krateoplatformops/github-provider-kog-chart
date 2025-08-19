@@ -1,11 +1,11 @@
 {{- if .Values.restdefinitions.collaborator.enabled }}
 kind: RestDefinition
-apiVersion: swaggergen.krateo.io/v1alpha1
+apiVersion: ogen.krateo.io/v1alpha1
 metadata:
   name: {{ .Release.Name }}-collaborator
 spec:
   oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-collaborator/collaborator.yaml
-  resourceGroup: github.kog.krateo.io
+  resourceGroup: github.ogen.krateo.io
   resource: 
     kind: Collaborator
     identifiers:

@@ -1,4 +1,4 @@
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Workflow
 metadata:
   name: test-workflow
