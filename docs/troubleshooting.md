@@ -47,7 +47,6 @@ kubectl get crds | grep github
 
 If the CRDs are installed, you should see output similar to this:
 ```sh
-bearerauths.github.ogen.krateo.io                    2025-06-12T16:24:23Z
 collaborators.github.ogen.krateo.io                  2025-06-12T16:24:23Z
 repoes.github.ogen.krateo.io                         2025-06-12T16:24:23Z
 runnergroups.github.ogen.krateo.io                   2025-06-12T16:24:24Z
@@ -56,6 +55,22 @@ workflows.github.ogen.krateo.io                      2025-06-12T16:24:24Z
 ```
 
 Note: if you configure to install just a subset of `restdefinitions`, you may not see all of the above CRDs.
+
+## Checking Configuration CRDs
+
+To check that the Configuration Custom Resource Definitions (CRDs) for the GitHub provider are installed in the Kubernetes cluster, you can run the following command:
+```sh
+kubectl get crd | grep ogen | grep 'configurations\.'
+```
+
+If the CRDs are installed, you should see output similar to this:
+```sh
+collaboratorconfigurations.github.ogen.krateo.io   2025-08-19T13:55:51Z
+repoconfigurations.github.ogen.krateo.io           2025-08-19T13:55:50Z
+runnergroupconfigurations.github.ogen.krateo.io    2025-08-19T13:55:47Z
+teamrepoconfigurations.github.ogen.krateo.io       2025-08-19T13:55:48Z
+workflowconfigurations.github.ogen.krateo.io       2025-08-19T13:55:46Z
+```
 
 ## Checking controllers
 
@@ -177,8 +192,9 @@ jobs:
 If in the Workflow CR you set the `inputs` field to something like this:
 ```yaml
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-workflow-config
+    namespace: default
   owner: krateoplatformops-test
   repo: workflow-tester
   workflow_id: test.yaml   # Can be the workflow file name
