@@ -8,11 +8,10 @@ spec:
   resourceGroup: github.ogen.krateo.io
   resource: 
     kind: TeamRepo
-    identifiers:
+    additionalStatusFields:
       - id 
       - name
       - full_name
-    additionalStatusFields:
       - permission
     verbsDescription:
     - action: create
@@ -23,7 +22,7 @@ spec:
       path: /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
     - action: get
       method: GET
-      path: /teamrepository/orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
+      path: /teamrepository/orgs/{org}/teams/{team_slug}/repos/{owner}/{repo} # plugin endpoint
     - action: update
       method: PUT
       path: /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}

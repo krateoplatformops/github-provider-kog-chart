@@ -8,9 +8,9 @@ spec:
   resourceGroup: github.ogen.krateo.io
   resource: 
     kind: Repo
-    identifiers:
-      - id 
+    additionalStatusFields:
       - name
+      - id
       - html_url
     verbsDescription:
     - action: create

@@ -8,23 +8,22 @@ spec:
   resourceGroup: github.ogen.krateo.io
   resource: 
     kind: Collaborator
-    identifiers:
+    additionalStatusFields:
       - id
       - html_url
-    additionalStatusFields:
       - permissions
       - message
     verbsDescription:
     - action: create
       method: POST
-      path: /repository/{owner}/{repo}/collaborators/{username}
+      path: /repository/{owner}/{repo}/collaborators/{username}            # plugin endpoint
     - action: delete
       method: DELETE
-      path: /repository/{owner}/{repo}/collaborators/{username}
+      path: /repository/{owner}/{repo}/collaborators/{username}            # plugin endpoint
     - action: get
       method: GET
-      path: /repository/{owner}/{repo}/collaborators/{username}/permission
+      path: /repository/{owner}/{repo}/collaborators/{username}/permission # plugin endpoint
     - action: update
       method: PATCH
-      path: /repository/{owner}/{repo}/collaborators/{username}
+      path: /repository/{owner}/{repo}/collaborators/{username}            # plugin endpoint
 {{ end }}

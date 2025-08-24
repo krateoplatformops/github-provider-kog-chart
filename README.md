@@ -1,10 +1,7 @@
 # GitHub Provider KOG Helm Chart
 
 This is a [Helm Chart](https://helm.sh/docs/topics/charts/) that deploys the Krateo GitHub Provider leveraging the [Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider) and using [OpenAPI Specifications (OAS) of the GitHub REST API](https://github.com/github/rest-api-description/blob/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml).
-This provider allows you to manage GitHub resources such as repositories, collaborators, teamrepoes, runnergroups and workflows runs using the Krateo platform.
-
-> [!NOTE]  
-> This chart is going to replace the [original Krateo github-provider](https://github.com/krateoplatformops/github-provider) in the future. 
+This provider allows you to manage GitHub resources such as repositories, collaborators, teamrepoes, runnergroups and workflows runs in a cloud-native way using the Krateo platform.
 
 ## Summary
 
@@ -41,18 +38,29 @@ helm install github-provider krateo/github-provider-kog
 ```
 
 > [!NOTE]
-> Due to the nature of the providers leveraging the [Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider), this chart will install a set of RestDefinitions that will in turn trigger the deployment of controllers in the cluster. These controllers need to be up and running before you can create or manage resources using the Custom Resources (CRs) defined by this provider. This may take a few minutes after the chart is installed.
+> Due to the nature of the providers leveraging the [Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider), this chart will install a set of RestDefinitions that will in turn trigger the deployment of a set controllers in the cluster. These controllers need to be up and running before you can create or manage resources using the Custom Resources (CRs) defined by this provider. This may take a few minutes after the chart is installed. The RestDefinitions will reach the condition `Ready` when the related CRDs are installed and the controllers are up and running.
 
-You can check the status of the controllers by running:
+You can check the status of the RestDefinitions with the following commands:
+
 ```sh
-until kubectl get deployment github-provider-<RESOURCE>-controller -n <YOUR_NAMESPACE> &>/dev/null; do
-  echo "Waiting for <RESOURCE> controller deployment to be created..."
-  sleep 5
-done
-kubectl wait deployments github-provider-<RESOURCE>-controller --for condition=Available=True --namespace <YOUR_NAMESPACE> --timeout=300s
+kubectl get restdefinitions.ogen.krateo.io --all-namespaces
+```
+You should see output similar to this:
+```sh
+NAMESPACE       NAME                           READY   AGE
+krateo-system   github-provider-collaborator   False   24s
+krateo-system   github-provider-repo           False   24s
+krateo-system   github-provider-runnergroup    False   24s
+krateo-system   github-provider-teamrepo       False   24s
+krateo-system   github-provider-workflow       False   24s
 ```
 
-Make sure to replace `<RESOURCE>` to one of the resources supported by the chart, such as `repo`, `collaborator`, `teamrepo`, `workflow` or `runnergroup`, and `<YOUR_NAMESPACE>` with the namespace where you installed the chart.
+You can also wait for a specific RestDefinition (`github-provider-repo` in this case) to be ready with a command like this:
+```sh
+kubectl wait restdefinitions.ogen.krateo.io github-provider-repo --for condition=Ready=True --namespace krateo-system --timeout=300s
+```
+
+Note that the names of the RestDefinitions and the namespace where the RestDefinitions are installed may vary based on your configuration.
 
 ## Supported resources
 
@@ -84,7 +92,7 @@ apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Repo
 metadata:
   name: test-repo
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
@@ -102,14 +110,14 @@ spec:
 
 The `Collaborator` resource allows you to add and remove collaborators from a GitHub repository. 
 You can specify the username of the collaborator and the permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
+Using any other value will result in an error or continuous reconciliation loops.
 Updating a collaborator's permission level is also supported.
 
 In addition, this resource supports adding "external collaborators" to a repository, meaning users who are not members of the organization that owns the repository.
 In this case, an invitation will be sent to the user with the specified permission level.
-Updating and deleting invitations is supported through the same resource.
+Updating and deleting invitations is supported through the same `Collaborator` resource.
 You can verify whether the user is directly added as a collaborator or if the invitation is pending by checking the `message` field in the Collaborator resource status.
 Note that the `Collaborator` resource will remain in a `Pending` state until the user accepts the invitation.
-
 
 An example of a `Collaborator` resource is:
 ```yaml
@@ -117,7 +125,7 @@ apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Collaborator
 metadata:
   name: add-collaborator
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
@@ -141,7 +149,7 @@ apiVersion: github.ogen.krateo.io/v1alpha1
 kind: TeamRepo
 metadata:
   name: test-teamrepo
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
@@ -169,7 +177,7 @@ apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Workflow
 metadata:
   name: workflow-tester
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
@@ -197,7 +205,7 @@ apiVersion: github.ogen.krateo.io/v1alpha1
 kind: RunnerGroup
 metadata:
   name: runnergroup-test
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
@@ -212,7 +220,6 @@ spec:
 ### Resource examples
 
 You can find example resources for each supported resource type in the `/samples` folder of the chart.
-These examples Custom Resources (CRs) show every possible field that can be set in the resource based reflected on the Custom Resource Definitions (CRDs) that are generated and installed in the cluster.
 
 ## Authentication
 

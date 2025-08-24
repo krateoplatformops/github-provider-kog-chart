@@ -9,7 +9,7 @@ spec:
   configurationRef:
     name: my-runnergroup-config
     namespace: default 
-  name: runner-test-by-krateo
+  name: runnergroup-test-by-krateo
   org: krateoplatformops-test
   allows_public_repositories: false
   restricted_to_workflows: false

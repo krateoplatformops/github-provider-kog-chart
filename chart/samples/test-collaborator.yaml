@@ -11,5 +11,5 @@ spec:
     namespace: default
   owner: krateoplatformops-test
   repo: collaborator-tester
-  username: vicentinileonardo
+  username: leonardo-vicentini
   permission: push
