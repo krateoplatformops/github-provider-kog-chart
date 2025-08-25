@@ -11,3 +11,8 @@ spec:
         name: gh-token        # Name of the secret
         namespace: default    # Namespace where the secret exists
         key: token            # Key within the secret that contains the token
+  configuration:
+    query:
+      findby:
+        page: 1
+        per_page: 100         # Maximum number of items per page (default is 30, max is 100)
