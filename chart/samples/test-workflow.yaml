@@ -1,13 +1,14 @@
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Workflow
 metadata:
-  name: workflow-tester1
-  namespace: ghp
+  name: test-workflow
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-workflow-config
+    namespace: default
   owner: krateoplatformops-test
   repo: workflow-tester
   workflow_id: test.yaml   # Can be the workflow file name

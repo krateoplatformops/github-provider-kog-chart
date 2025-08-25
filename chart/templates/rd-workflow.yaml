@@ -1,11 +1,11 @@
 {{- if .Values.restdefinitions.workflow.enabled }}
 kind: RestDefinition
-apiVersion: swaggergen.krateo.io/v1alpha1
+apiVersion: ogen.krateo.io/v1alpha1
 metadata:
   name: {{ .Release.Name }}-workflow
 spec:
   oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-workflow/workflow.yaml
-  resourceGroup: github.kog.krateo.io
+  resourceGroup: github.ogen.krateo.io
   resource: 
     kind: Workflow
     verbsDescription:

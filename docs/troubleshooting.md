@@ -1,4 +1,4 @@
-# Troubleshooting
+# Troubleshooting guide
 
 ## Summary
 
@@ -14,6 +14,7 @@
     - [`private` and `visibility` fields](#private-and-visibility-fields)
   - [Collaborator](#collaborator)
     - [Note on Organization Base Permissions](#note-on-organization-base-permissions)
+    - [Note on "Mixed roles"](#note-on-mixed-roles)
   - [Workflow](#workflow)
     - [Wrong input fields set](#wrong-input-fields-set)
 
@@ -21,17 +22,17 @@
 
 To check that the `restdefinitions` for the GitHub provider are correctly installed in the Kubernetes cluster, you can run the following command:
 ```sh
-kubectl get restdefinition -n <YOUR_NAMESPACE>
+kubectl get restdefinitions.ogen.krateo.io -A
 ```
 
 You should see output similar to this:
 ```sh
-NAME               READY
-ghp-collaborator   True
-ghp-repo           True
-ghp-runnergroup    True
-ghp-teamrepo       True
-ghp-workflow       True
+NAMESPACE       NAME                           READY   AGE
+krateo-system   github-provider-collaborator   True    3h27m
+krateo-system   github-provider-repo           True    3h27m
+krateo-system   github-provider-runnergroup    True    3h27m
+krateo-system   github-provider-teamrepo       True    3h27m
+krateo-system   github-provider-workflow       True    3h27m
 ```
 
 Note: if you confifure to install just a subset of `restdefinitions`, you may not see all of the above `restdefinitions`.
@@ -47,15 +48,30 @@ kubectl get crds | grep github
 
 If the CRDs are installed, you should see output similar to this:
 ```sh
-bearerauths.github.kog.krateo.io                    2025-06-12T16:24:23Z
-collaborators.github.kog.krateo.io                  2025-06-12T16:24:23Z
-repoes.github.kog.krateo.io                         2025-06-12T16:24:23Z
-runnergroups.github.kog.krateo.io                   2025-06-12T16:24:24Z
-teamrepoes.github.kog.krateo.io                     2025-06-12T16:24:23Z
-workflows.github.kog.krateo.io                      2025-06-12T16:24:24Z
+collaborators.github.ogen.krateo.io                  2025-06-12T16:24:23Z
+repoes.github.ogen.krateo.io                         2025-06-12T16:24:23Z
+runnergroups.github.ogen.krateo.io                   2025-06-12T16:24:24Z
+teamrepoes.github.ogen.krateo.io                     2025-06-12T16:24:23Z
+workflows.github.ogen.krateo.io                      2025-06-12T16:24:24Z
 ```
 
 Note: if you configure to install just a subset of `restdefinitions`, you may not see all of the above CRDs.
+
+## Checking Configuration CRDs
+
+To check that the Configuration Custom Resource Definitions (CRDs) for the GitHub provider are installed in the Kubernetes cluster, you can run the following command:
+```sh
+kubectl get crd | grep ogen | grep 'configurations\.'
+```
+
+If the CRDs are installed, you should see output similar to this:
+```sh
+collaboratorconfigurations.github.ogen.krateo.io   2025-08-19T13:55:51Z
+repoconfigurations.github.ogen.krateo.io           2025-08-19T13:55:50Z
+runnergroupconfigurations.github.ogen.krateo.io    2025-08-19T13:55:47Z
+teamrepoconfigurations.github.ogen.krateo.io       2025-08-19T13:55:48Z
+workflowconfigurations.github.ogen.krateo.io       2025-08-19T13:55:46Z
+```
 
 ## Checking controllers
 
@@ -118,6 +134,8 @@ When configuring the `permissions` field for collaborators, ensure you're using 
 | `triage`                |
 | `pull`                  |
 
+Using any other value will result in an error or continuous reconciliation loops.
+
 #### Note on Organization Base Permissions
 
 If the organization's "Base permissions" are set to `read`, and you attempt to add a collaborator (who is already a member of the organization) to a repository with `pull` permissions **as the initial permission**, the collaborator may **not** appear in the repository's collaborators list.
@@ -127,6 +145,14 @@ Instead, an external collaborator with `pull` permissions will still be visible 
 On the other hand, if you first add the collaborator with a higher permission level (e.g., `push`), and then downgrade the permission to `pull`, the collaborator **will** be visible in the list in the GitHub UI.
 
 This behavior is related to how GitHub handles permission inheritance from organization-level settings.
+
+#### Note on "Mixed roles" warning on GitHub UI
+
+A user that is an organization owner is already an admin of all the repositories in the organization.
+Therefore, if you try to add an organization owner as a collaborator to a repository with a lower permission level (e.g., `push` or `pull`), the user will still have admin access to the repository due to their organization owner role and you will incur in continuous reconciliation loops as the external state of the permission will always be `admin`.
+On the GitHub UI, the user will be shown but with a warning icon "Mixed roles" next to their username.
+
+Additionally, if you try to add an organization owner as a collaborator to a repository with `admin` permission, the GitHub UI will not show the user in the collaborators list of the repository.
 
 ### Workflow
 
@@ -177,8 +203,9 @@ jobs:
 If in the Workflow CR you set the `inputs` field to something like this:
 ```yaml
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-workflow-config
+    namespace: default
   owner: krateoplatformops-test
   repo: workflow-tester
   workflow_id: test.yaml   # Can be the workflow file name

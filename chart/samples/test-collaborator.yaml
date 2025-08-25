@@ -1,13 +1,14 @@
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Collaborator
 metadata:
   name: test-collaborator
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-collaborator-config
+    namespace: default
   owner: krateoplatformops-test
   repo: collaborator-tester
   username: leonardo-vicentini

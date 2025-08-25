@@ -1,29 +1,29 @@
 {{- if .Values.restdefinitions.collaborator.enabled }}
 kind: RestDefinition
-apiVersion: swaggergen.krateo.io/v1alpha1
+apiVersion: ogen.krateo.io/v1alpha1
 metadata:
   name: {{ .Release.Name }}-collaborator
 spec:
   oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-collaborator/collaborator.yaml
-  resourceGroup: github.kog.krateo.io
+  resourceGroup: github.ogen.krateo.io
   resource: 
     kind: Collaborator
-    identifiers:
+    additionalStatusFields:
       - id
-      - permissions
       - html_url
+      - permissions
       - message
     verbsDescription:
     - action: create
       method: POST
-      path: /repository/{owner}/{repo}/collaborators/{username}
+      path: /repository/{owner}/{repo}/collaborators/{username}            # plugin endpoint
     - action: delete
       method: DELETE
-      path: /repository/{owner}/{repo}/collaborators/{username}
+      path: /repository/{owner}/{repo}/collaborators/{username}            # plugin endpoint
     - action: get
       method: GET
-      path: /repository/{owner}/{repo}/collaborators/{username}/permission
+      path: /repository/{owner}/{repo}/collaborators/{username}/permission # plugin endpoint
     - action: update
       method: PATCH
-      path: /repository/{owner}/{repo}/collaborators/{username}
+      path: /repository/{owner}/{repo}/collaborators/{username}            # plugin endpoint
 {{ end }}

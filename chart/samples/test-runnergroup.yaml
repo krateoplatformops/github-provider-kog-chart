@@ -1,14 +1,15 @@
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: RunnerGroup
 metadata:
-  name: runner-test
-  namespace: ghp
+  name: test-runnergroup
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
-  name: runner-test-by-krateo
+  configurationRef:
+    name: my-runnergroup-config
+    namespace: default 
+  name: runnergroup-test-by-krateo
   org: krateoplatformops-test
   allows_public_repositories: false
   restricted_to_workflows: false

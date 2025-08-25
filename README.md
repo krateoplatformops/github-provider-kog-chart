@@ -1,10 +1,7 @@
-# GitHub Provider Helm Chart
+# GitHub Provider KOG Helm Chart
 
 This is a [Helm Chart](https://helm.sh/docs/topics/charts/) that deploys the Krateo GitHub Provider leveraging the [Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider) and using [OpenAPI Specifications (OAS) of the GitHub REST API](https://github.com/github/rest-api-description/blob/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml).
-This provider allows you to manage GitHub resources such as repositories, collaborators, and workflow runs using the Krateo platform.
-
-> [!NOTE]  
-> This chart is going to replace the [original Krateo github-provider](https://github.com/krateoplatformops/github-provider) in the future. 
+This provider allows you to manage GitHub resources such as repositories, collaborators, teamrepoes, runnergroups and workflows runs in a cloud-native way using the Krateo platform.
 
 ## Summary
 
@@ -41,18 +38,29 @@ helm install github-provider krateo/github-provider-kog
 ```
 
 > [!NOTE]
-> Due to the nature of the providers leveraging the [Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider), this chart will install a set of RestDefinitions that will in turn trigger the deployment of controllers in the cluster. These controllers need to be up and running before you can create or manage resources using the Custom Resources (CRs) defined by this provider. This may take a few minutes after the chart is installed.
+> Due to the nature of the providers leveraging the [Krateo OASGen Provider](https://github.com/krateoplatformops/oasgen-provider), this chart will install a set of RestDefinitions that will in turn trigger the deployment of a set controllers in the cluster. These controllers need to be up and running before you can create or manage resources using the Custom Resources (CRs) defined by this provider. This may take a few minutes after the chart is installed. The RestDefinitions will reach the condition `Ready` when the related CRDs are installed and the controllers are up and running.
 
-You can check the status of the controllers by running:
+You can check the status of the RestDefinitions with the following commands:
+
 ```sh
-until kubectl get deployment github-provider-<RESOURCE>-controller -n <YOUR_NAMESPACE> &>/dev/null; do
-  echo "Waiting for <RESOURCE> controller deployment to be created..."
-  sleep 5
-done
-kubectl wait deployments github-provider-<RESOURCE>-controller --for condition=Available=True --namespace <YOUR_NAMESPACE> --timeout=300s
+kubectl get restdefinitions.ogen.krateo.io --all-namespaces
+```
+You should see output similar to this:
+```sh
+NAMESPACE       NAME                           READY   AGE
+krateo-system   github-provider-collaborator   False   24s
+krateo-system   github-provider-repo           False   24s
+krateo-system   github-provider-runnergroup    False   24s
+krateo-system   github-provider-teamrepo       False   24s
+krateo-system   github-provider-workflow       False   24s
 ```
 
-Make sure to replace `<RESOURCE>` to one of the resources supported by the chart, such as `repo`, `collaborator`, `teamrepo`, `workflow` or `runnergroup`, and `<YOUR_NAMESPACE>` with the namespace where you installed the chart.
+You can also wait for a specific RestDefinition (`github-provider-repo` in this case) to be ready with a command like this:
+```sh
+kubectl wait restdefinitions.ogen.krateo.io github-provider-repo --for condition=Ready=True --namespace krateo-system --timeout=300s
+```
+
+Note that the names of the RestDefinitions and the namespace where the RestDefinitions are installed may vary based on your configuration.
 
 ## Supported resources
 
@@ -69,7 +77,7 @@ This chart supports the following resources and operations:
 > [!NOTE]  
 > 🚫 *"Not applicable"* indicates that the operation is not supported by this provider because it probably does not make sense for the resource type.  For example, GitHub Workflow runs are typically not updated or deleted directly; they are triggered and if a new run is needed, a new workflow run is created.
 
-The resources listed above are Custom Resources (CRs) defined in the `github.krateo.io` API group. They are used to manage GitHub resources in a Kubernetes-native way, allowing you to create, update, and delete GitHub resources using Kubernetes manifests.
+The resources listed above are Custom Resources (CRs) defined in the `github.ogen.krateo.io` API group. They are used to manage GitHub resources in a Kubernetes-native way, allowing you to create, update, and delete GitHub resources using Kubernetes manifests.
 
 ### Resource details
 
@@ -80,16 +88,17 @@ You can specify the repository name, description, visibility (public or private)
 
 An example of a Repo resource is:
 ```yaml
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Repo
 metadata:
   name: test-repo
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-repo-config
+    namespace: default 
   org: krateoplatformops-test
   name: test-repo
   description: A short description of the repository set by Krateo
@@ -101,27 +110,28 @@ spec:
 
 The `Collaborator` resource allows you to add and remove collaborators from a GitHub repository. 
 You can specify the username of the collaborator and the permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
+Using any other value will result in an error or continuous reconciliation loops.
 Updating a collaborator's permission level is also supported.
 
 In addition, this resource supports adding "external collaborators" to a repository, meaning users who are not members of the organization that owns the repository.
 In this case, an invitation will be sent to the user with the specified permission level.
-Updating and deleting invitations is supported through the same resource.
+Updating and deleting invitations is supported through the same `Collaborator` resource.
 You can verify whether the user is directly added as a collaborator or if the invitation is pending by checking the `message` field in the Collaborator resource status.
-Note that the Collaborator resource will remain in a `Pending` state until the user accepts the invitation.
+Note that the `Collaborator` resource will remain in a `Pending` state until the user accepts the invitation.
 
-
-An example of a Collaborator resource is:
+An example of a `Collaborator` resource is:
 ```yaml
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Collaborator
 metadata:
   name: add-collaborator
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-collaborator-config
+    namespace: default 
   owner: krateoplatformops-test
   repo: collaborator-tester
   username: vicentinileonardo
@@ -135,16 +145,17 @@ You can specify the `team_slug`, repository name, and permission level among `ad
 
 An example of a TeamRepo resource is:
 ```yaml
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: TeamRepo
 metadata:
   name: test-teamrepo
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-teamrepo-config
+    namespace: default 
   org: krateoplatformops-test
   owner: krateoplatformops-test
   team_slug: testteam
@@ -162,16 +173,17 @@ Please refer to the [GitHub REST API documentation](https://docs.github.com/en/r
 
 An example of a Workflow resource is:
 ```yaml
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: Workflow
 metadata:
   name: workflow-tester
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-workflow-config
+    namespace: default 
   owner: krateoplatformops-test
   repo: workflow-tester
   workflow_id: test.yaml
@@ -189,16 +201,17 @@ The `RunnerGroup` resource allows you to manage GitHub runner groups. You can sp
 
 An example of a RunnerGroup resource is:
 ```yaml
-apiVersion: github.kog.krateo.io/v1alpha1
+apiVersion: github.ogen.krateo.io/v1alpha1
 kind: RunnerGroup
 metadata:
   name: runnergroup-test
-  namespace: ghp
+  namespace: default
   annotations:
     krateo.io/connector-verbose: "true"
 spec:
-  authenticationRefs:
-    bearerAuthRef: bearer-gh-ref
+  configurationRef:
+    name: my-runnergroup-config
+    namespace: default
   name: runner-test-by-krateo
   org: krateoplatformops-test
   allows_public_repositories: false
@@ -207,11 +220,10 @@ spec:
 ### Resource examples
 
 You can find example resources for each supported resource type in the `/samples` folder of the chart.
-These examples Custom Resources (CRs) show every possible field that can be set in the resource based reflected on the Custom Resource Definitions (CRDs) that are generated and installed in the cluster.
 
 ## Authentication
 
-The authentication to the GitHub REST API is managed using 2 resources (both are required):
+The authentication to the GitHub REST API is managed using 2 kinds of resources (both are required):
 
 - **Kubernetes Secret**: This resource is used to store the GitHub Personal Access Token (PAT) that is used to authenticate with the GitHub REST API. The PAT should have the necessary permissions to manage the resources you want to create or update.
 
@@ -224,7 +236,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: gh-token
-  namespace: krateo-system
+  namespace: default
 type: Opaque
 stringData:
   token: <PAT>
@@ -233,22 +245,41 @@ EOF
 
 Replace `<PAT>` with your actual GitHub Personal Access Token.
 
-- **BearerAuth**: This resource references the Kubernetes Secret and is used to authenticate with the GitHub REST API. It is used in the `authenticationRefs` field of the resources defined in this chart.
+- **\<Resource\>Configuration**: These resource can reference the Kubernetes Secret and are used to authenticate with the GitHub REST API. They must be referenced with the `configurationRef` field of the resources defined in this chart. The configuration resource can be in a different namespace than the resource itself.
 
-Example of a BearerAuth resource that references the Kubernetes Secret, to be applied to your cluster:
+Note that the specific configuration resource type depends on the resource you are managing. For instance, in the case of the `Repo` resource, you would need a `RepoConfiguration`.
+
+An example of a `RepoConfiguration` resource that references the Kubernetes Secret, to be applied to your cluster:
 ```sh
 kubectl apply -f - <<EOF
-apiVersion: github.kog.krateo.io/v1alpha1
-kind: BearerAuth
+apiVersion: github.ogen.krateo.io/v1alpha1
+kind: RepoConfiguration
 metadata:
-  name: bearer-gh-ref
-  namespace: ghp
+  name: my-repo-config
+  namespace: default
 spec:
-  tokenRef:
-    key: token
-    name: gh-token
-    namespace: krateo-system
+  authentication:
+    bearer:
+      # Reference to a secret containing the bearer token
+      tokenRef:
+        name: gh-token        # Name of the secret
+        namespace: default    # Namespace where the secret exists
+        key: token            # Key within the secret that contains the token
 EOF
+```
+
+Then, in the `Repo` resource, you can reference the `RepoConfiguration` resource as follows:
+```yaml
+apiVersion: github.ogen.krateo.io/v1alpha1
+kind: Repo
+metadata:
+  name: test-repo
+spec:
+  configurationRef:
+    name: my-repo-config
+    namespace: default
+  org: krateoplatformops-test
+  name: test-repo
 ```
 
 ## Configuration
@@ -276,7 +307,7 @@ They also define the operations that can be performed on those resources. Once t
 
 - **/assets** folder: Contains the selected OpenAPI Specification files for the GitHub REST API.
 
-- **/samples** folder: Contains example resources for each supported resource type as seen in this README. These examples demonstrate how to create and manage GitHub resources using the Krateo GitHub Provider.
+- **/samples** folder: Contains example resources for each supported resource type as seen in this README. These examples demonstrate how to create and manage GitHub resources using the Krateo GitHub Provider KOG.
 
 - **Deployment**: Deploys a [plugin](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin) that is used as a proxy to resolve some inconsistencies of the GitHub REST API. The specific endpoins managed by the plugin are described in the [plugin README](https://github.com/krateoplatformops/github-rest-dynamic-controller-plugin/blob/main/README.md)
 

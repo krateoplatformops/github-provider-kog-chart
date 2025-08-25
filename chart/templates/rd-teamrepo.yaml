@@ -1,14 +1,14 @@
 {{- if .Values.restdefinitions.teamrepo.enabled }}
 kind: RestDefinition
-apiVersion: swaggergen.krateo.io/v1alpha1
+apiVersion: ogen.krateo.io/v1alpha1
 metadata:
   name: {{ .Release.Name }}-teamrepo
 spec:
   oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-teamrepo/teamrepo.yaml
-  resourceGroup: github.kog.krateo.io
+  resourceGroup: github.ogen.krateo.io
   resource: 
     kind: TeamRepo
-    identifiers:
+    additionalStatusFields:
       - id 
       - name
       - full_name
@@ -22,7 +22,7 @@ spec:
       path: /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
     - action: get
       method: GET
-      path: /teamrepository/orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
+      path: /teamrepository/orgs/{org}/teams/{team_slug}/repos/{owner}/{repo} # plugin endpoint
     - action: update
       method: PUT
       path: /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
