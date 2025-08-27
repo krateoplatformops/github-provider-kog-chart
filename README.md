@@ -5,7 +5,6 @@ This provider allows you to manage GitHub resources such as repositories, collab
 
 ## Summary
 
-- [Summary](#summary)
 - [Requirements](#requirements)
 - [How to install](#how-to-install)
 - [Supported resources](#supported-resources)
@@ -18,6 +17,7 @@ This provider allows you to manage GitHub resources such as repositories, collab
   - [Resource examples](#resource-examples)
 - [Authentication](#authentication)
 - [Configuration](#configuration)
+  - [Configuration resources](#configuration-resources)
   - [values.yaml](#valuesyaml)
   - [Verbose logging](#verbose-logging)
 - [Chart structure](#chart-structure)
@@ -282,14 +282,43 @@ spec:
   name: test-repo
 ```
 
+More details about the configuration resources in the [Configuration resources](#configuration-resources) section below.
+
 ## Configuration
+
+### Configuration resources
+
+Each resource type (e.g., `Repo`, `Collaborator`, `TeamRepo`) requires a specific configuration resource (e.g., `RepoConfiguration`, `CollaboratorConfiguration`, `TeamRepoConfiguration`) to be created in the cluster.
+Currently, the supported configuration resources are:
+- `RepoConfiguration`
+- `CollaboratorConfiguration`
+- `TeamRepoConfiguration`
+- `WorkflowConfiguration`
+- `RunnerGroupConfiguration`
+These configuration resources are used to store the authentication information (i.e., reference to the Kubernetes Secret containing the GitHub PAT) and other configuration options for the resource type.
+You can find examples of these configuration resources in the `/samples/configs` folder of the chart.
+Note that a single configuration resource can be used by multiple resources of the same type.
+For example, you can create a single `RepoConfiguration` resource and reference it in multiple `Repo` resources.
 
 ### values.yaml
 
 You can customize the chart by modifying the `values.yaml` file.
 For instance, you can select which resources the provider should support in the oncoming installation by setting the `restdefinitions` field in the `values.yaml` file. 
-This may be useful if you want to limit the resources managed by the provider to only those you need, reducing the overhead of managing unnecessary controllers.
-The default configuration enables all resources supported by the chart.
+This may be useful if you want to limit the resources managed by the provider to only those you need, reducing the overhead of managing unnecessary controllers. For instance, if you only need to manage `Repo` resources, you can disable the other resources by setting the `restdefinitions` field as follows:
+```yaml
+restdefinitions:
+  collaborator:
+    enabled: false
+  repo:
+    enabled: true
+  teamrepo:
+    enabled: false
+  workflow:
+    enabled: false
+  runnergroup:
+    enabled: false
+```
+The default configuration of the chart enables all resources supported by the chart.
 
 ### Verbose logging
 
