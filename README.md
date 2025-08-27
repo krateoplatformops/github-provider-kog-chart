@@ -295,6 +295,7 @@ Currently, the supported configuration resources are:
 - `TeamRepoConfiguration`
 - `WorkflowConfiguration`
 - `RunnerGroupConfiguration`
+
 These configuration resources are used to store the authentication information (i.e., reference to the Kubernetes Secret containing the GitHub PAT) and other configuration options for the resource type.
 You can find examples of these configuration resources in the `/samples/configs` folder of the chart.
 Note that a single configuration resource can be used by multiple resources of the same type.
