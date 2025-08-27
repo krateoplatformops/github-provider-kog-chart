@@ -43,7 +43,7 @@ helm install github-provider krateo/github-provider-kog
 You can check the status of the RestDefinitions with the following commands:
 
 ```sh
-kubectl get restdefinitions.ogen.krateo.io --all-namespaces
+kubectl get restdefinitions.ogen.krateo.io --all-namespaces | awk 'NR==1 || /github/'
 ```
 You should see output similar to this:
 ```sh
