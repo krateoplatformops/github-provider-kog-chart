@@ -142,6 +142,8 @@ spec:
 
 The `TeamRepo` resource allows you to manage team access to GitHub repositories. 
 You can specify the `team_slug`, repository name, and permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
+Using any other value will result in an error or continuous reconciliation loops.
+Updating a collaborator's permission level is also supported.
 
 An example of a TeamRepo resource is:
 ```yaml
