@@ -15,6 +15,7 @@
   - [Collaborator](#collaborator)
     - [Note on Organization Base Permissions](#note-on-organization-base-permissions)
     - [Note on "Mixed roles"](#note-on-mixed-roles)
+  - [TeamRepo](#teamrepo)
   - [Workflow](#workflow)
     - [Wrong input fields set](#wrong-input-fields-set)
 
@@ -124,7 +125,7 @@ The field `private` is set to `false` by default.
 
 ### Collaborator
 
-When configuring the `permissions` field for collaborators, ensure you're using one of the valid permission levels:
+When configuring the `permission` field for collaborators, ensure you're using one of the valid permission levels:
 
 | Valid Permission Levels |
 |-------------------------|
@@ -153,6 +154,20 @@ Therefore, if you try to add an organization owner as a collaborator to a reposi
 On the GitHub UI, the user will be shown but with a warning icon "Mixed roles" next to their username.
 
 Additionally, if you try to add an organization owner as a collaborator to a repository with `admin` permission, the GitHub UI will not show the user in the collaborators list of the repository.
+
+### TeamRepo
+
+When configuring the `permission` field for TeamRepoes, ensure you're using one of the valid permission levels:
+
+| Valid Permission Levels |
+|-------------------------|
+| `admin`                 |
+| `maintain`              |
+| `push`                  |
+| `triage`                |
+| `pull`                  |
+
+Using any other value will result in an error or continuous reconciliation loops.
 
 ### Workflow
 

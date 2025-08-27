@@ -43,7 +43,7 @@ helm install github-provider krateo/github-provider-kog
 You can check the status of the RestDefinitions with the following commands:
 
 ```sh
-kubectl get restdefinitions.ogen.krateo.io --all-namespaces
+kubectl get restdefinitions.ogen.krateo.io --all-namespaces | awk 'NR==1 || /github/'
 ```
 You should see output similar to this:
 ```sh
@@ -142,6 +142,8 @@ spec:
 
 The `TeamRepo` resource allows you to manage team access to GitHub repositories. 
 You can specify the `team_slug`, repository name, and permission level among `admin`, `pull`, `push`, `maintain`, and `triage`.
+Using any other value will result in an error or continuous reconciliation loops.
+Updating a collaborator's permission level is also supported.
 
 An example of a TeamRepo resource is:
 ```yaml
@@ -295,6 +297,7 @@ Currently, the supported configuration resources are:
 - `TeamRepoConfiguration`
 - `WorkflowConfiguration`
 - `RunnerGroupConfiguration`
+
 These configuration resources are used to store the authentication information (i.e., reference to the Kubernetes Secret containing the GitHub PAT) and other configuration options for the resource type.
 You can find examples of these configuration resources in the `/samples/configs` folder of the chart.
 Note that a single configuration resource can be used by multiple resources of the same type.
