@@ -120,12 +120,12 @@ plugin:
 
 restdefinitions:
   collaborator:
-    enabled: false
+    enabled: true
   repo:
     enabled: true
   teamrepo:
-    enabled: false
+    enabled: true
   workflow:
-    enabled: false
+    enabled: true
   runnergroup:
-    enabled: false
+    enabled: true
