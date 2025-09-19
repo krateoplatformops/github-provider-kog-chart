@@ -115,6 +115,9 @@ readinessProbe:
   timeoutSeconds: 5
   periodSeconds: 5
 
+plugin:
+  suffix: "plugin" # This is the suffix added to the deployment name and service name of the plugin.
+
 restdefinitions:
   collaborator:
     enabled: true

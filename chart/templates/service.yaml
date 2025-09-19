@@ -1,7 +1,8 @@
+{{- if eq (include "github-provider-kog.plugin.enabled" . | trim) "true" -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "github-provider-kog.fullname" . }}
+  name: {{ include "github-provider-kog.fullname" . }}-{{ .Values.plugin.suffix | default "plugin" }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "github-provider-kog.labels" . | nindent 4 }}
@@ -14,3 +15,4 @@ spec:
       name: http
   selector:
     {{- include "github-provider-kog.selectorLabels" . | nindent 4 }}
+{{- end }}

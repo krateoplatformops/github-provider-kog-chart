@@ -61,7 +61,24 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-
 {{- define "webServiceUrl" -}}
-http://{{ include "github-provider-kog.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+http://{{ include "github-provider-kog.fullname" . }}-{{ .Values.plugin.suffix | default "plugin" }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+{{- end -}}
+
+{{/*
+Check if the plugin deployment is enabled.
+Logic:
+- Define a static list of resource definitions that require the plugin.
+- Loop through all the enabled restdefinitions from values.yaml.
+- If an enabled definition's name is in the static list, print "true".
+*/}}
+{{- define "github-provider-kog.plugin.enabled" -}}
+{{- $requiresPluginList := list "collaborator" "teamrepo" -}}
+{{- $enabled := false -}}
+{{- range $key, $value := .Values.restdefinitions -}}
+{{- if and $value.enabled (has $key $requiresPluginList) -}}
+{{- $enabled = true -}}
+{{- end -}}
+{{- end -}}
+{{- printf "%t" $enabled -}}
 {{- end -}}
