@@ -1,3 +1,4 @@
+{{- if eq (include "github-provider-kog.plugin.enabled" . | trim) "true" -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -14,3 +15,4 @@ spec:
       name: http
   selector:
     {{- include "github-provider-kog.selectorLabels" . | nindent 4 }}
+{{- end }}
