@@ -1,0 +1,284 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.1
+  name: repoes.github.ogen.krateo.io
+spec:
+  conversion:
+    strategy: None
+  group: github.ogen.krateo.io
+  names:
+    categories:
+    - repo
+    - restresources
+    - rr
+    kind: Repo
+    listKind: RepoList
+    plural: repoes
+    singular: repo
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: READY
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          spec:
+            properties:
+              allow_auto_merge:
+                default: false
+                description: Either `true` to allow auto-merge on pull requests, or
+                  `false` to disallow auto-merge.
+                type: boolean
+              allow_merge_commit:
+                default: true
+                description: Either `true` to allow merging pull requests with a merge
+                  commit, or `false` to prevent merging pull requests with merge commits.
+                type: boolean
+              allow_rebase_merge:
+                default: true
+                description: Either `true` to allow rebase-merging pull requests,
+                  or `false` to prevent rebase-merging.
+                type: boolean
+              allow_squash_merge:
+                default: true
+                description: Either `true` to allow squash-merging pull requests,
+                  or `false` to prevent squash-merging.
+                type: boolean
+              auto_init:
+                default: false
+                description: Pass `true` to create an initial commit with empty README.
+                type: boolean
+              configurationRef:
+                description: A reference to the Configuration CR that holds all the
+                  needed configuration for this resource. OASGen Provider added this
+                  field automatically.
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    description: Namespace of the referenced Configuration CR. If
+                      not provided, the same namespace will be used.
+                    type: string
+                required:
+                - name
+                type: object
+              delete_branch_on_merge:
+                default: false
+                description: Either `true` to allow automatically deleting head branches
+                  when pull requests are merged, or `false` to prevent automatic deletion.
+                  **The authenticated user must be an organization owner to set this
+                  property to `true`.**
+                type: boolean
+              description:
+                description: A short description of the repository.
+                type: string
+              gitignore_template:
+                description: Desired language or platform [.gitignore template](https://github.com/github/gitignore)
+                  to apply. Use the name of the template without the extension. For
+                  example, "Haskell".
+                type: string
+              has_downloads:
+                default: true
+                description: Whether downloads are enabled.
+                type: boolean
+              has_issues:
+                default: true
+                description: Either `true` to enable issues for this repository or
+                  `false` to disable them.
+                type: boolean
+              has_projects:
+                default: true
+                description: Either `true` to enable projects for this repository
+                  or `false` to disable them. **Note:** If you're creating a repository
+                  in an organization that has disabled repository projects, the default
+                  is `false`, and if you pass `true`, the API returns an error.
+                type: boolean
+              has_wiki:
+                default: false
+                description: Either `true` to enable the wiki for this repository
+                  or `false` to disable it.
+                type: boolean
+              homepage:
+                description: A URL with more information about the repository.
+                type: string
+              is_template:
+                default: false
+                description: Either `true` to make this repo available as a template
+                  repository or `false` to prevent it.
+                type: boolean
+              license_template:
+                description: Choose an [open source license template](https://choosealicense.com/)
+                  that best suits your needs, and then use the [license keyword](https://docs.github.com/articles/licensing-a-repository/#searching-github-by-license-type)
+                  as the `license_template` string. For example, "mit" or "mpl-2.0".
+                type: string
+              merge_commit_message:
+                description: |-
+                  The default value for a merge commit message.
+
+                  - `PR_TITLE` - default to the pull request's title.
+                  - `PR_BODY` - default to the pull request's body.
+                  - `BLANK` - default to a blank commit message.
+                enum:
+                - PR_BODY
+                - PR_TITLE
+                - BLANK
+                type: string
+              merge_commit_title:
+                description: |-
+                  Required when using `merge_commit_message`.
+
+                  The default value for a merge commit title.
+
+                  - `PR_TITLE` - default to the pull request's title.
+                  - `MERGE_MESSAGE` - default to the classic title for a merge message (e.g., Merge pull request #123 from branch-name).
+                enum:
+                - PR_TITLE
+                - MERGE_MESSAGE
+                type: string
+              name:
+                description: The name of the repository.
+                type: string
+              org:
+                description: 'PARAMETER: path - The organization name. The name is
+                  not case sensitive.'
+                type: string
+              private:
+                default: false
+                description: Whether the repository is private.
+                type: boolean
+              squash_merge_commit_message:
+                description: |-
+                  The default value for a squash merge commit message:
+
+                  - `PR_BODY` - default to the pull request's body.
+                  - `COMMIT_MESSAGES` - default to the branch's commit messages.
+                  - `BLANK` - default to a blank commit message.
+                enum:
+                - PR_BODY
+                - COMMIT_MESSAGES
+                - BLANK
+                type: string
+              squash_merge_commit_title:
+                description: |-
+                  Required when using `squash_merge_commit_message`.
+
+                  The default value for a squash merge commit title:
+
+                  - `PR_TITLE` - default to the pull request's title.
+                  - `COMMIT_OR_PR_TITLE` - default to the commit's title (if only one commit) or the pull request's title (when more than one commit).
+                enum:
+                - PR_TITLE
+                - COMMIT_OR_PR_TITLE
+                type: string
+              team_id:
+                description: The id of the team that will be granted access to this
+                  repository. This is only valid when creating a repository in an
+                  organization.
+                type: integer
+              use_squash_pr_title_as_default:
+                default: false
+                description: Either `true` to allow squash-merge commits to use pull
+                  request title, or `false` to use commit message. **This property
+                  has been deprecated. Please use `squash_merge_commit_title` instead.
+                type: boolean
+              visibility:
+                description: The visibility of the repository.
+                enum:
+                - public
+                - private
+                type: string
+            required:
+            - configurationRef
+            - name
+            - org
+            type: object
+          status:
+            properties:
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        LastTransitionTime is the last time this condition transitioned from one
+                        status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        A Message containing details about this condition's last transition from
+                        one status to another, if any.
+                      type: string
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                    type:
+                      description: |-
+                        Type of this condition. At most one of each condition type may apply to
+                        a resource at any point in time.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+              failedObjectRef:
+                properties:
+                  apiVersion:
+                    description: API version of the object.
+                    type: string
+                  kind:
+                    description: Kind of the object.
+                    type: string
+                  name:
+                    description: Name of the object.
+                    type: string
+                  namespace:
+                    description: Namespace of the object.
+                    type: string
+                type: object
+              html_url:
+                description: ' (format: uri)'
+                type: string
+              id:
+                description: ' (format: int64)'
+                type: integer
+              name:
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
